@@ -19,8 +19,8 @@ public class RunpodController {
     private final RunpodService runpodService;
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> submitJobAndStreamOutput(@RequestParam String request) {
-        return runpodService.streamJob(request);
+    public Flux<String> submitJobAndStreamOutput(@RequestParam String prompt) {
+        return runpodService.streamJob(prompt);
     }
 
     @GetMapping("/status/{jobId}")
