@@ -1,6 +1,6 @@
 package longrun.runpod.service;
 
-import longrun.runpod.client.RunpodApiClient;
+import longrun.runpod.client.RunPodApiClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -11,14 +11,20 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class RunpodService {
+public class RunPodService {
 
-    private final RunpodApiClient apiClient;
+    private final RunPodApiClient apiClient;
+
+    @Value("${runpod.api.key}")
+    private String runpodApiKey;
+
+    @Value("${runpod.api.endpoint}")
+    private String runpodEndPoint;
 
     // 고정된 endpointId 사용 (예: "quwzbmj4k9r5pi")
-    public RunpodService(@Value("${runpod.api.key}") String apiKey) {
+    public RunPodService(@Value("${runpod.api.key}") String apiKey) {
         String fixedEndpointId = "quwzbmj4k9r5pi";
-        this.apiClient = new RunpodApiClient(apiKey, fixedEndpointId);
+        this.apiClient = new RunPodApiClient(apiKey, fixedEndpointId);
     }
 
     // Job 제출

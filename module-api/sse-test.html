@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Runpod SSE Streaming</title>
+    <title>RunPod SSE Streaming</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,7 +26,7 @@
     </style>
 </head>
 <body>
-<h2>Runpod SSE Streaming</h2>
+<h2>RunPod SSE Streaming</h2>
 <label for="prompt">Prompt:</label>
 <textarea id="prompt" rows="5" placeholder="Enter your prompt..."></textarea>
 <button id="start">Start Streaming</button>
@@ -45,7 +45,7 @@
         outputDiv.textContent = "⏳ Starting stream...\n";
 
         // GET 방식으로 쿼리 파라미터를 통해 프롬프트 전달
-        const url = "http://localhost:8080/runpod/stream?prompt=" + encodeURIComponent(prompt);
+        const url = "http://localhost:8080/api/v1/runpod/stream?prompt=" + encodeURIComponent(prompt);
 
         fetch(url, { method: "GET" })
             .then(response => {

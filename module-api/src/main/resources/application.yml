@@ -1,0 +1,14 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+runpod:
+  api:
+    key: "rpa_JXPAS3TMYRYAT0H0ZVXSGENZ3BIET1EMOBKUCJMP0yngu7"
+    base-url: "https://api.runpod.io"
+    endpoint: "https://api.runpod.ai/v2/quwzbmj4k9r5pi/run"

@@ -7,12 +7,12 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.Map;
 
-public class RunpodApiClient {
+public class RunPodApiClient {
 
     private final WebClient webClient;
     private final String endpointId; // 고정된 endpoint id
 
-    public RunpodApiClient(String apiKey, String endpointId) {
+    public RunPodApiClient(String apiKey, String endpointId) {
         this.endpointId = endpointId;
         this.webClient = WebClient.builder()
                 .baseUrl("https://api.runpod.ai")
