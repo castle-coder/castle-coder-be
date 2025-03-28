@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Runpod SSE Streaming</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background-color: #f7f7f7;
+        }
+        textarea, button {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+        #output {
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+            background: white;
+            padding: 1rem;
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body>
+<h2>🧠 Runpod Prompt Streaming</h2>
+
+<label for="prompt">📝 Prompt:</label>
+<textarea id="prompt" rows="5" placeholder="Enter your prompt here..."></textarea>
+
+<button onclick="startStream()">🚀 Start Streaming</button>
+
+<h3>📡 Stream Output</h3>
+<div id="output">결과가 여기에 표시됩니다...</div>
+
+<script>
+    // ✅ 고정된 엔드포인트 ID
+    const endpointId = "quwzbmj4k9r5pi"; // ← 실제 Runpod 엔드포인트 ID로 바꿔주세요
+
+    function startStream() {
+        const prompt = document.getElementById("prompt").value.trim();
+        const outputDiv = document.getElementById("output");
+        outputDiv.textContent = "⏳ 요청 중...";
+
+        if (!prompt) {
+            outputDiv.textContent = "⚠️ Prompt를 입력해주세요.";
+            return;
+        }
+
+        fetch("http://localhost:8080/runpod/stream", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ serverEndpointId: endpointId, prompt: prompt })
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error("SSE 연결 실패");
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let fullText = "";
+
+            function read() {
+                reader.read().then(({ done, value }) => {
+                    if (done) {
+                        outputDiv.textContent += "\n✅ 스트리밍 완료!";
+                        return;
+                    }
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split("\n");
+                    for (let line of lines) {
+                        if (line.startsWith("data:")) {
+                            const data = line.replace(/^data:\s*/, "");
+                            fullText += data;
+                            outputDiv.textContent = fullText;
+                        }
+                    }
+
+                    read(); // 계속 읽기
+                });
+            }
+
+            read();
+        }).catch(err => {
+            outputDiv.textContent = "❌ 오류 발생: " + err.message;
+            console.error(err);
+        });
+    }
+</script>
+</body>
+</html>
