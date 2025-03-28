@@ -23,8 +23,8 @@ public class RunpodController {
         return runpodService.streamJob(request);
     }
 
-    @GetMapping("/status/{endpointId}/{jobId}")
-    public Mono<Map> checkJobStatus(@PathVariable String endpointId, @PathVariable String jobId) {
-        return runpodService.checkJobStatus(endpointId, jobId);
+    @GetMapping("/status/{jobId}")
+    public Mono<Map> checkJobStatus(@PathVariable String jobId) {
+        return runpodService.checkJobStatus(jobId);
     }
 }

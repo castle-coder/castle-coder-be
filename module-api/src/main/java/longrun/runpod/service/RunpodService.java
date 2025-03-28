@@ -1,12 +1,11 @@
 package longrun.runpod.service;
 
+import longrun.runpod.client.RunpodApiClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,16 +13,15 @@ import java.util.Map;
 @Service
 public class RunpodService {
 
-    private final WebClient webClient;
+    private final RunpodApiClient apiClient;
 
+    // 고정된 endpointId 사용 (예: "quwzbmj4k9r5pi")
     public RunpodService(@Value("${runpod.api.key}") String apiKey) {
-        this.webClient = WebClient.builder()
-                .baseUrl("https://api.runpod.ai")
-                .defaultHeader("Authorization", "Bearer " + apiKey)
-                .defaultHeader("Content-Type", "application/json")
-                .build();
+        String fixedEndpointId = "quwzbmj4k9r5pi";
+        this.apiClient = new RunpodApiClient(apiKey, fixedEndpointId);
     }
 
+    // Job 제출
     public Mono<Map> submitJob(String prompt) {
         Map<String, Object> inputMap = new HashMap<>();
         inputMap.put("prompt", prompt);
@@ -36,15 +34,10 @@ public class RunpodService {
         Map<String, Object> payload = new HashMap<>();
         payload.put("input", inputMap);
 
-        String runUrl = String.format("/v2/%s/run", "quwzbmj4k9r5pi");
-
-        return webClient.post()
-                .uri(runUrl)
-                .bodyValue(payload)
-                .retrieve()
-                .bodyToMono(Map.class);
+        return apiClient.submitJob(payload);
     }
 
+    // 스트리밍 Job 실행 및 결과 누적
     public Flux<String> streamJob(String prompt) {
         return submitJob(prompt).flatMapMany(response -> {
             Object idObj = response.get("id");
@@ -54,15 +47,9 @@ public class RunpodService {
             String jobId = idObj.toString();
             System.out.println("Job ID: " + jobId);
 
-            String streamUrl = String.format("/v2/%s/stream/%s", "quwzbmj4k9r5pi", jobId);
             StringBuilder fullText = new StringBuilder();
 
-            return Flux.interval(Duration.ofMillis(300))
-                    .flatMap(tick -> webClient.get()
-                            .uri(streamUrl)
-                            .retrieve()
-                            .bodyToMono(Map.class))
-                    .takeUntil(map -> "COMPLETED".equals(map.get("status")))
+            return apiClient.pollStream(jobId)
                     .flatMap(map -> {
                         if (map.containsKey("stream")) {
                             List<Map<String, Object>> streamList = (List<Map<String, Object>>) map.get("stream");
@@ -92,11 +79,8 @@ public class RunpodService {
         });
     }
 
-    public Mono<Map> checkJobStatus(String endpointId, String jobId) {
-        String url = String.format("/v2/%s/status/%s", endpointId, jobId);
-        return webClient.get()
-                .uri(url)
-                .retrieve()
-                .bodyToMono(Map.class);
+    // Job 상태 확인
+    public Mono<Map> checkJobStatus(String jobId) {
+        return apiClient.checkJobStatus(jobId);
     }
 }
