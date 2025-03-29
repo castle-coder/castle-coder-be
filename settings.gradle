@@ -1,0 +1,5 @@
+rootProject.name = 'castle-coder-be'
+include 'module-api'
+include 'module-infra'
+include 'module-domain'
+include 'module-common'
