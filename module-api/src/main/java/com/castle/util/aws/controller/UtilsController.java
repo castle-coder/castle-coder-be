@@ -1,5 +1,6 @@
 package com.castle.util.aws.controller;
 
+import com.castle.core.code.success.GlobalSuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,7 +27,7 @@ public class UtilsController {
             @ApiResponse(responseCode = "200", description = "헬스 체크 성공", useReturnTypeSchema = true),
     })
     @GetMapping("/health")
-    public ResponseEntity<String> checkHealth() {
-        return ResponseEntity.ok("OK");
+    public ResponseEntity<BfResponse<GlobalSuccessCode>> checkHealth() {
+        return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
     }
 }
