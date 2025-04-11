@@ -1,6 +1,6 @@
-package longrun.runpod.service;
+package com.castle.runpod.service;
 
-import longrun.runpod.client.RunPodApiClient;
+import com.castle.runpod.client.RunPodApiClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

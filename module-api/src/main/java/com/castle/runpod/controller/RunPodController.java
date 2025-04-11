@@ -1,7 +1,7 @@
-package longrun.runpod.controller;
+package com.castle.runpod.controller;
 
 import lombok.RequiredArgsConstructor;
-import longrun.runpod.service.RunPodService;
+import com.castle.runpod.service.RunPodService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;

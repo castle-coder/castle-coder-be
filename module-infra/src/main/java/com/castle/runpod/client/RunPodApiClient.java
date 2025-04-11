@@ -1,4 +1,4 @@
-package longrun.runpod.client;
+package com.castle.runpod.client;
 
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;

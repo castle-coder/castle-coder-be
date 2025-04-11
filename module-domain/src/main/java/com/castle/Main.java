@@ -1,4 +1,4 @@
-package longrun;
+package com.castle;
 
 public class Main {
     public static void main(String[] args) {

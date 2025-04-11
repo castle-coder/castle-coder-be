@@ -8,7 +8,7 @@ bootJar.enabled = false
 
 // 모든 하위 모듈들에 이 설정을 적용.
 subprojects {
-	group = 'longrun'
+	group = 'com.castle'
 	version = '0.0.1-SNAPSHOT'
 	sourceCompatibility = '21'
 
