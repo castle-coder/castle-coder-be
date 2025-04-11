@@ -10,5 +10,11 @@ server:
 runpod:
   api:
     key: ${RUNPOD_API_KEY}
-    base-url: "https://api.runpod.io"
-    endpoint: "https://api.runpod.ai/v2/quwzbmj4k9r5pi/run"
+    base-url: ${RUNPOD_BASE_URL}
+    endpoint: ${RUNPOD_ENDPOINT}
+
+springdoc:
+  path: /swagger-ui/index.html
+  swagger-ui:
+    tags-sorter: default
+    operations-sorter: method
