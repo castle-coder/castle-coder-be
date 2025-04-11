@@ -21,9 +21,4 @@ public class RunPodController {
     public Flux<String> submitJobAndStreamOutput(@RequestParam String prompt) {
         return runpodService.streamJob(prompt);
     }
-
-    @GetMapping("/status/{jobId}")
-    public Mono<Map> checkJobStatus(@PathVariable String jobId) {
-        return runpodService.checkJobStatus(jobId);
-    }
 }

@@ -81,12 +81,7 @@ public class RunPodService {
                         return Flux.empty();
                     })
                     .doOnNext(chunk -> System.out.println("Stream output: " + chunk))
-                    .doOnComplete(() -> System.out.println("📦 전체 결과:\n" + fullText));
+                    .doOnComplete(() -> System.out.println("전체 결과:\n" + fullText));
         });
-    }
-
-    // Job 상태 확인
-    public Mono<Map> checkJobStatus(String jobId) {
-        return apiClient.checkJobStatus(jobId);
     }
 }
