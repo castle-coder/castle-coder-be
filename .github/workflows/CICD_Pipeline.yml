@@ -62,7 +62,7 @@ jobs:
         with: 
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USERNAME }}
-          password: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
