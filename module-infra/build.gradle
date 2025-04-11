@@ -2,4 +2,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation 'io.projectreactor:reactor-test'
+
+    // gRPC
+    implementation("io.grpc:grpc-netty-shaded:1.56.0")
+    implementation("io.grpc:grpc-protobuf:1.56.0")
+    implementation("io.grpc:grpc-stub:1.56.0")
 }
