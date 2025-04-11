@@ -14,13 +14,13 @@ import static com.castle.core.code.success.GlobalSuccessCode.SUCCESS;
 public class BfResponse<T> {
 
     @Schema(description = "응답 코드", example = "200")
-    private int code;
+    private final int code;
 
     @Schema(description = "응답 메시지", example = "성공")
-    private String message;
+    private final String message;
 
     @Schema(description = "응답 데이터")
-    private T data;
+    private final T data;
 
     public BfResponse(T data) {
         this.code = SUCCESS.getCode();
