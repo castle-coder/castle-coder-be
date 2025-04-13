@@ -62,9 +62,24 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            echo "RUNPOD_API_KEY=${{ secrets.RUNPOD_API_KEY }}" > .env
-            echo "RUNPOD_BASE_URL=${{ secrets.RUNPOD_BASE_URL }}" >> .env
-            echo "RUNPOD_ENDPOINT=${{ secrets.RUNPOD_ENDPOINT }}" >> .env
+            if grep -q "^RUNPOD_API_KEY=" .env; then
+              sed -i "s/^RUNPOD_API_KEY=.*/RUNPOD_API_KEY=${{ secrets.RUNPOD_API_KEY }}/" .env
+            else
+              echo "RUNPOD_API_KEY=${{ secrets.RUNPOD_API_KEY }}" >> .env
+            fi
+
+            if grep -q "^RUNPOD_BASE_URL=" .env; then
+              sed -i "s/^RUNPOD_BASE_URL=.*/RUNPOD_BASE_URL=${{ secrets.RUNPOD_BASE_URL }}/" .env
+            else
+              echo "RUNPOD_BASE_URL=${{ secrets.RUNPOD_BASE_URL }}" >> .env
+            fi
+
+            if grep -q "^RUNPOD_ENDPOINT=" .env; then
+              sed -i "s/^RUNPOD_ENDPOINT=.*/RUNPOD_ENDPOINT=${{ secrets.RUNPOD_ENDPOINT }}/" .env
+            else
+              echo "RUNPOD_ENDPOINT=${{ secrets.RUNPOD_ENDPOINT }}" >> .env
+            fi
+            
             docker stop castle-coder-be || true
             docker rm castle-coder-be || true
 
