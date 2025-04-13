@@ -62,13 +62,17 @@
                             return;
                         }
                         const chunk = decoder.decode(value, { stream: true });
-                        // SSE 형식은 "data:"로 시작하는 라인이 있음
+
+
                         chunk.split("\n").forEach(line => {
+                            // 앞뒤 공백 제거 X, data:만 파싱
                             if (line.startsWith("data:")) {
-                                const data = line.replace("data:", "").trim();
-                                outputDiv.textContent += data;
+                                const dataOnly = line.slice(5); // "data:" 이후 전부
+                                outputDiv.textContent += dataOnly; // 줄바꿈도 안 붙임!
                             }
                         });
+
+
                         read();
                     });
                 }

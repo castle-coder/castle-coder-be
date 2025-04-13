@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/common/utils")
+@RequestMapping("/utils")
 @RequiredArgsConstructor
 @Tag(name = "유틸리티", description = "유틸리티 관련 API")
 public class UtilsController {
