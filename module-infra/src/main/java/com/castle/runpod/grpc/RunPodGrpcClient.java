@@ -8,8 +8,10 @@ import io.grpc.stub.StreamObserver;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import service.ServicePb2;
-import service.ServicePb2Grpc;
+
+import runpod.Service.HandleRequest;
+import runpod.Service.HandleResponse;
+import runpod.RunPodServiceGrpc;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,9 +29,6 @@ public class RunPodGrpcClient {
         this.objectMapper = new ObjectMapper();
     }
 
-    /**
-     * RunPod AI 모델 서버에 REST 요청을 보낸 후, 워커의 gRPC 대상(ip:port)을 가져온다.
-     */
     public String runAndGetGrpcTarget(String endpointId, String apiKey, String prompt) {
         String runUrl = "https://api.runpod.ai/v2/" + endpointId + "/run";
         String statusUrlTemplate = "https://api.runpod.ai/v2/" + endpointId + "/status/%s";
@@ -38,11 +37,9 @@ public class RunPodGrpcClient {
         headers.set("Authorization", "Bearer " + apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // POST 요청 본문 구성
         Map<String, Object> requestBody = new HashMap<>();
         Map<String, Object> input = new HashMap<>();
 
-        // system, user 메시지 구성
         Map<String, String> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
         systemMessage.put("content", "You are Qwen, created by Alibaba Cloud. You are a helpful assistant.");
@@ -53,19 +50,15 @@ public class RunPodGrpcClient {
 
         input.put("messages", List.of(systemMessage, userMessage));
 
-        // 샘플링 파라미터
         Map<String, Object> samplingParams = new HashMap<>();
         samplingParams.put("temperature", 0.7);
         samplingParams.put("max_tokens", 10000);
         input.put("sampling_params", samplingParams);
-
-        // 스트리밍 옵션
         input.put("stream", true);
-        requestBody.put("input", input);
 
+        requestBody.put("input", input);
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        // RunPod에 POST 요청
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(runUrl, requestEntity, String.class);
         String requestId;
         try {
@@ -75,7 +68,6 @@ public class RunPodGrpcClient {
             throw new RuntimeException("Failed to parse request id from RunPod", e);
         }
 
-        // 워커 준비 상태를 폴링하여 gRPC 대상(ip:port) 반환
         String grpcTarget = null;
         for (int i = 0; i < 300; i++) {
             String statusUrl = String.format(statusUrlTemplate, requestId);
@@ -104,9 +96,6 @@ public class RunPodGrpcClient {
         return grpcTarget;
     }
 
-    /**
-     * gRPC를 통해 AI 모델 서버의 스트리밍 응답을 받아, 콜백(onToken)을 통해 토큰 단위로 전달한다.
-     */
     public void streamFromGrpc(String grpcTarget, String prompt,
                                Consumer<String> onToken,
                                Runnable onComplete,
@@ -115,23 +104,22 @@ public class RunPodGrpcClient {
                 .usePlaintext()
                 .build();
 
-        ServicePb2Grpc.RunPodServiceStub stub = ServicePb2Grpc.newStub(channel);
+        RunPodServiceGrpc.RunPodServiceStub stub = RunPodServiceGrpc.newStub(channel);
 
-        ServicePb2.HandleRequest request = ServicePb2.HandleRequest.newBuilder()
+        HandleRequest request = HandleRequest.newBuilder()
                 .setPrompt(prompt)
                 .setSeconds(2)
                 .build();
 
-        stub.handle(request, new StreamObserver<ServicePb2.HandleResponse>() {
+        stub.handle(request, new StreamObserver<HandleResponse>() {
             @Override
-            public void onNext(ServicePb2.HandleResponse response) {
+            public void onNext(HandleResponse response) {
                 try {
                     JsonNode data = objectMapper.readTree(response.getResult());
                     if (data.has("finished") && data.get("finished").asBoolean()) {
                         onComplete.run();
                         return;
                     }
-                    // token 추출: token → choices[0] → tokens[0]
                     JsonNode choices = data.path("token").path("choices");
                     if (choices.isArray() && choices.size() > 0) {
                         JsonNode tokens = choices.get(0).path("tokens");
@@ -153,6 +141,7 @@ public class RunPodGrpcClient {
             @Override
             public void onCompleted() {
                 onComplete.run();
+                channel.shutdown();
             }
         });
     }

@@ -1,10 +1,63 @@
+plugins {
+    id("com.google.protobuf") version "0.9.3"
+}
+
+def grpcVersion = "1.66.0"
+def protobufVersion = '3.25.3'
+def protocVersion = protobufVersion
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation 'io.projectreactor:reactor-test'
 
-    // gRPC
-    implementation("io.grpc:grpc-netty-shaded:1.56.0")
-    implementation("io.grpc:grpc-protobuf:1.56.0")
-    implementation("io.grpc:grpc-stub:1.56.0")
+
+    // grpc 프로토콜 버퍼
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+
+    // grpc 서버, 클라이언트 설정
+    implementation 'net.devh:grpc-client-spring-boot-starter:3.1.0.RELEASE'
+    implementation 'net.devh:grpc-spring-boot-starter:3.1.0.RELEASE'
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+}
+
+// 프로토콜 버퍼 컴파일러(protoc) 설정
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protocVersion}"
+    }
+
+    // gRPC 플러그인 설정
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.66.0'
+        }
+    }
+
+    // 프로토콜 버퍼 생성 작업 설정
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+        ofSourceSet('main')
+    }
+}
+
+// 'clean' 작업 설정
+tasks.named('clean') {
+    doFirst {
+        delete 'build/generated/source/proto' // 프로토콜 버퍼 생성된 디렉토리 삭제
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
 }
