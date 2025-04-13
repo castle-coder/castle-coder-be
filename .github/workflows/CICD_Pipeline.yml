@@ -76,7 +76,7 @@ jobs:
             docker run -d --name castle-coder-be -p 8080:8080 \
               -v $HOME/.env:/app/.env \
               -w /app \
-              ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latestt 
+              ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
 
 
 
