@@ -34,7 +34,7 @@ out/
 /.nb-gradle/
 
 ### 루트 경로의 env 파일
-/.env
+.env
 
 ### VS Code ###
 .vscode/

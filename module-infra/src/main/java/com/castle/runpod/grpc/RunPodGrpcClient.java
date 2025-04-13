@@ -71,7 +71,13 @@ public class RunPodGrpcClient {
         String grpcTarget = null;
         for (int i = 0; i < 300; i++) {
             String statusUrl = String.format(statusUrlTemplate, requestId);
-            ResponseEntity<String> statusResponse = restTemplate.getForEntity(statusUrl, String.class);
+            HttpEntity<Void> statusRequestEntity = new HttpEntity<>(headers);
+            ResponseEntity<String> statusResponse = restTemplate.exchange(
+                    statusUrl,
+                    HttpMethod.GET,
+                    statusRequestEntity,
+                    String.class
+            );
             try {
                 JsonNode statusJson = objectMapper.readTree(statusResponse.getBody());
                 JsonNode output = statusJson.path("output");

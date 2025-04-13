@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/runpod")
 @RequiredArgsConstructor
 public class RunPodStreamController {
 

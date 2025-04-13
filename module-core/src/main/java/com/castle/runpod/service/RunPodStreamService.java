@@ -12,12 +12,12 @@ public class RunPodStreamService {
 
     private final RunPodGrpcClient runPodGrpcClient;
 
-    // .env 또는 application.yml 에서 환경변수를 로딩
-    @Value("${RUNPOD_ENDPOINT_ID}")
+    @Value("${runpod.api.endpoint}")
     private String endpointId;
 
-    @Value("${RUNPOD_API_KEY}")
+    @Value("${runpod.api.key}")
     private String apiKey;
+
 
     /**
      * 프론트엔드에 SSE를 통해 스트리밍 전송한다.
