@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>RunPod SSE Streaming</title>
     <style>
         body {
@@ -9,7 +9,8 @@
             padding: 2rem;
             background-color: #f0f0f0;
         }
-        textarea, button {
+        textarea,
+        button {
             font-size: 1rem;
             margin: 0.5rem 0;
             padding: 0.5rem;
@@ -21,9 +22,13 @@
             background: white;
             padding: 1rem;
             min-height: 200px;
-            white-space: pre-wrap;
+            white-space: normal;
+            overflow-y: auto;
         }
     </style>
+
+    <!-- 마크다운 변환기 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 <h2>RunPod SSE Streaming</h2>
@@ -31,55 +36,68 @@
 <textarea id="prompt" rows="5" placeholder="Enter your prompt..."></textarea>
 <button id="start">Start Streaming</button>
 <h3>Output</h3>
-<div id="output">Waiting for stream...</div>
+<div id="output"><em>Waiting for stream...</em></div>
 
 <script>
-    document.getElementById('start').addEventListener('click', function() {
-        const prompt = document.getElementById('prompt').value.trim();
-        const outputDiv = document.getElementById('output');
+    document.getElementById("start").addEventListener("click", function () {
+        const prompt = document.getElementById("prompt").value.trim();
+        const outputDiv = document.getElementById("output");
         if (!prompt) {
-            outputDiv.textContent = "⚠️ Please enter a prompt.";
+            outputDiv.innerHTML = "<strong>⚠️ Please enter a prompt.</strong>";
             return;
         }
 
-        outputDiv.textContent = "⏳ Starting stream...\n";
+        outputDiv.innerHTML = "<em>⏳ Starting stream...</em>";
 
-        // GET 방식으로 쿼리 파라미터를 통해 프롬프트 전달
-        const url = "http://localhost:8080/api/v1/runpod/stream?prompt=" + encodeURIComponent(prompt);
+        const url =
+            "http://localhost:8080/api/v1/runpod/stream?prompt=" +
+            encodeURIComponent(prompt);
+
+        let buffer = "";
 
         fetch(url, { method: "GET" })
-            .then(response => {
+            .then((response) => {
                 if (!response.ok) {
                     throw new Error("Failed to connect to stream endpoint.");
                 }
+
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder("utf-8");
 
                 function read() {
                     reader.read().then(({ done, value }) => {
                         if (done) {
-                            outputDiv.textContent += "\n✅ Stream complete.";
+                            outputDiv.innerHTML =
+                                marked.parse(buffer) +
+                                "<br><strong>✅ Stream complete.</strong>";
                             return;
                         }
+
                         const chunk = decoder.decode(value, { stream: true });
 
-
-                        chunk.split("\n").forEach(line => {
-                            // 앞뒤 공백 제거 X, data:만 파싱
+                        chunk.split("\n").forEach((line) => {
                             if (line.startsWith("data:")) {
-                                const dataOnly = line.slice(5); // "data:" 이후 전부
-                                outputDiv.textContent += dataOnly; // 줄바꿈도 안 붙임!
+                                let token = line.slice(5).replace(/\\n/g, "\n");
+
+                                // 버퍼에 누적
+                                buffer += token;
+
+                                // 실시간 마크다운 렌더링
+                                outputDiv.innerHTML = marked.parse(buffer);
+
+                                // 항상 스크롤 아래로 유지
+                                outputDiv.scrollTop = outputDiv.scrollHeight;
                             }
                         });
-
 
                         read();
                     });
                 }
+
                 read();
             })
-            .catch(err => {
-                outputDiv.textContent = "❌ Error: " + err.message;
+            .catch((err) => {
+                outputDiv.innerHTML = `<strong>❌ Error:</strong> ${err.message}`;
                 console.error(err);
             });
     });
