@@ -1,0 +1,36 @@
+package com.castle.runpod.controller;
+
+import com.castle.runpod.service.RunPodStreamService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+@RestController
+@RequestMapping("/runpod")
+@RequiredArgsConstructor
+public class RunPodStreamController {
+
+    private final RunPodStreamService runPodStreamService;
+
+    /**
+     * 프론트엔드에서 prompt 파라미터를 받아 SSE 스트림으로 응답 전송
+     */
+    @Operation(
+            summary = "ai 모델 응답 요청",
+            description = "헬스 체킹을 진행합니다."
+    )
+    @SecurityRequirements(value = {})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "헬스 체크 성공", useReturnTypeSchema = true),
+    })
+    @CrossOrigin(origins = "http://localhost:63342")
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter stream(@RequestParam String prompt) {
+        return runPodStreamService.streamToClient(prompt);
+    }
+}

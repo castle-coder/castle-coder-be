@@ -68,7 +68,13 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
             docker stop castle-coder-be || true
             docker rm castle-coder-be || true
-            docker run -d --name castle-coder-be -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
+            docker run -d --name castle-coder-be \
+            -e RUNPOD_API_KEY=${{ secrets.RUNPOD_API_KEY }} \
+            -e RUNPOD_BASE_URL=${{ secrets.RUNPOD_BASE_URL }} \
+            -e RUNPOD_ENDPOINT=${{ secrets.RUNPOD_ENDPOINT }} \
+            -p 8080:8080 \
+            ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
+
 
 
 
