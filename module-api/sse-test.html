@@ -22,13 +22,10 @@
             background: white;
             padding: 1rem;
             min-height: 200px;
-            white-space: normal;
+            white-space: pre-wrap; /* 줄바꿈 유지 */
             overflow-y: auto;
         }
     </style>
-
-    <!-- 마크다운 변환기 -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 <h2>RunPod SSE Streaming</h2>
@@ -43,17 +40,15 @@
         const prompt = document.getElementById("prompt").value.trim();
         const outputDiv = document.getElementById("output");
         if (!prompt) {
-            outputDiv.innerHTML = "<strong>⚠️ Please enter a prompt.</strong>";
+            outputDiv.textContent = "⚠️ Please enter a prompt.";
             return;
         }
 
-        outputDiv.innerHTML = "<em>⏳ Starting stream...</em>";
+        outputDiv.textContent = "⏳ Starting stream...\n";
 
         const url =
-            "http://localhost:8080/api/v1/runpod/stream?prompt=" +
+            "http://13.125.85.38:8080/api/v1/runpod/stream?prompt=" +
             encodeURIComponent(prompt);
-
-        let buffer = "";
 
         fetch(url, { method: "GET" })
             .then((response) => {
@@ -67,28 +62,22 @@
                 function read() {
                     reader.read().then(({ done, value }) => {
                         if (done) {
-                            outputDiv.innerHTML =
-                                marked.parse(buffer) +
-                                "<br><strong>✅ Stream complete.</strong>";
+                            outputDiv.textContent += "\n✅ Stream complete.";
                             return;
                         }
 
                         const chunk = decoder.decode(value, { stream: true });
 
-                        chunk.split("\n").forEach((line) => {
-                            if (line.startsWith("data:")) {
-                                let token = line.slice(5).replace(/\\n/g, "\n");
+                        const dataRegex = /data:(.*)/g;
+                        let match;
+                        while ((match = dataRegex.exec(chunk)) !== null) {
+                            let token = match[1]; // group 1 = data: 뒤의 내용
 
-                                // 버퍼에 누적
-                                buffer += token;
+                            console.log("📦 token =", JSON.stringify(token));
 
-                                // 실시간 마크다운 렌더링
-                                outputDiv.innerHTML = marked.parse(buffer);
-
-                                // 항상 스크롤 아래로 유지
-                                outputDiv.scrollTop = outputDiv.scrollHeight;
-                            }
-                        });
+                            outputDiv.textContent += token;
+                            outputDiv.scrollTop = outputDiv.scrollHeight;
+                        }
 
                         read();
                     });
@@ -97,7 +86,7 @@
                 read();
             })
             .catch((err) => {
-                outputDiv.innerHTML = `<strong>❌ Error:</strong> ${err.message}`;
+                outputDiv.textContent = `❌ Error: ${err.message}`;
                 console.error(err);
             });
     });
