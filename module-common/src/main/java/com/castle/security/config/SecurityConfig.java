@@ -1,5 +1,6 @@
 package com.castle.security.config;
 
+import com.castle.security.handler.CustomAccessDeniedHandler;
 import com.castle.security.service.jwt.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
