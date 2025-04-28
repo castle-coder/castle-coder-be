@@ -132,7 +132,7 @@ public class SecurityConfig {
      */
     private RequestMatcher[] authenticatedRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
-
+                antMatcher(POST, "/runpod/stream") // ai 모델 응답 요청
 
         );
 
