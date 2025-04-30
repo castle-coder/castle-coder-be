@@ -1,6 +1,7 @@
 package com.castle.security.principal;
 
 import com.castle.domain.member.entity.Member;
+import com.castle.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
