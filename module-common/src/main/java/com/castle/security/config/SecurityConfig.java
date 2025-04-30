@@ -1,6 +1,8 @@
 package com.castle.security.config;
 
 import com.castle.security.handler.CustomAccessDeniedHandler;
+import com.castle.security.principal.PrincipalDetailsService;
+import com.castle.security.provider.CustomAuthenticationProvider;
 import com.castle.security.service.jwt.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,7 @@ import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 /**
- * JWT 및 OAuth 관련 설정을 포함하고 있는 Spring Security 설정 클래스입니다.
+ * JWT 관련 설정을 포함하고 있는 Spring Security 설정 클래스입니다.
  */
 @Configuration
 @EnableWebSecurity

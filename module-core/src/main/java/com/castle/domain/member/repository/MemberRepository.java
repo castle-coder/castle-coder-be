@@ -1,6 +1,7 @@
 package com.castle.domain.member.repository;
 
 import com.castle.domain.member.entity.Member;
+import com.castle.domain.member.entity.RolesType;
 
 import java.util.Optional;
 

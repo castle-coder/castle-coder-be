@@ -1,9 +1,12 @@
 package com.castle.security.principal;
 
 import com.castle.domain.member.entity.Member;
+import com.castle.domain.member.entity.RolesType;
 import com.castle.domain.member.repository.MemberRepository;
+import com.castle.security.service.jwt.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,10 +64,6 @@ public class PrincipalDetailsService implements CustomUserDetailsService {
                     .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER_ID));
         }
 
-        // 회원 상태가 WITHDRAWN인 경우 ACTIVE로 변경
-        if (member.getStatus() == MemberStatus.WITHDRAWN) {
-            member.updateMemberStatus(MemberStatus.ACTIVE);
-        }
         return new PrincipalDetails(member);
     }
 
