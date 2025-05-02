@@ -2,7 +2,6 @@ package com.castle.exception;
 
 import com.castle.code.error.BaseErrorCode;
 import com.castle.response.ErrorResponse;
-import io.jsonwebtoken.JwtException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
