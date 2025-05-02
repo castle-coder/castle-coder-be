@@ -13,7 +13,7 @@ public enum MemberErrorCode implements BaseErrorCode {
     NOT_FOUND_MEMBER_ID(404, "존재하지 않는 회원입니다.", HttpStatus.NOT_FOUND),
 
     // 409 CONFLICT
-    EXIST_MEMBER_EMAIL(409, "이미 등록되어 있는 이메일입니다.", HttpStatus.NOT_FOUND),
+    EXIST_MEMBER_EMAIL(409, "이미 등록되어 있는 이메일입니다.", HttpStatus.NOT_FOUND);
 
     private final int errorCode;
     private final String errorMessage;
