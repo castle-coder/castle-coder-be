@@ -1,7 +1,10 @@
 package com.castle.response;
 
+import com.castle.code.success.GlobalSuccessCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+
+import static com.castle.code.success.GlobalSuccessCode.SUCCESS;
 
 /**
  * 프로젝트 전역적으로 사용되는 REST API 응답 클래스입니다.
