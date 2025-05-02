@@ -1,5 +1,6 @@
 package com.castle.code.error;
 
+import com.castle.response.ErrorResponse;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static com.castle.code.error.GlobalErrorCode.VALIDATION_FAILED;
+
 /**
  * 프로젝트 전역적으로 사용되는 REST API 에러 응답 클래스입니다.
  */
