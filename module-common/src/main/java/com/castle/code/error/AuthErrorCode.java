@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum AuthErrorCode implements BaseErrorCode {
     // 400 BAD_REQUEST
-    NOT_FOUND_DB(400, "데이터베이스에서 사용자 정보를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
+    NOT_FOUND_DB(400, "데이터베이스에서 사용자 정보를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
 
     private final int errorCode;
     private final String errorMessage;

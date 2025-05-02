@@ -8,4 +8,5 @@ dependencies {
 
     implementation project(":module-infra")
     implementation project(":module-core")
+    implementation project(":module-common")
 }

@@ -1,12 +1,12 @@
 package com.castle.security.principal;
 
+import com.castle.code.error.MemberErrorCode;
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.entity.RolesType;
 import com.castle.domain.member.repository.MemberRepository;
 import com.castle.security.service.jwt.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
