@@ -4,6 +4,7 @@ import com.castle.code.error.MemberErrorCode;
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.entity.RolesType;
 import com.castle.domain.member.repository.MemberRepository;
+import com.castle.exception.MemberException;
 import com.castle.security.service.jwt.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
