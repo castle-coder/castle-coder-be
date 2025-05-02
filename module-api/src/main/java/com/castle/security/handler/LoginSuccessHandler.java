@@ -3,6 +3,7 @@ package com.castle.security.handler;
 import com.castle.domain.member.dto.MemberJwtDto;
 import com.castle.domain.member.entity.Member;
 import com.castle.response.BfResponse;
+import com.castle.security.dto.response.JwtTokenResponse;
 import com.castle.security.principal.PrincipalDetailsService;
 import com.castle.security.service.jwt.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;

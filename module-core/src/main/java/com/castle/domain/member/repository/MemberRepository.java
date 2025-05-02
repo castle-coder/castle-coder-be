@@ -2,13 +2,14 @@ package com.castle.domain.member.repository;
 
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.entity.RolesType;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface MemberRepository {
-    // 회원 정보를 ID로 조회하는 메서드
-    Optional<Member> findById(Long id);
-
+/**
+ * 회원 도메인의 Repository 입니다.
+ */
+public interface MemberRepository extends JpaRepository<Member, Long> {
     // 회원 정보를 이메일로 조회하는 메서드
     Optional<Member> findByEmail(String email);
 
