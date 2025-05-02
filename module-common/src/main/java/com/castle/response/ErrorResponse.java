@@ -1,4 +1,4 @@
-package com.castle.core.response;
+package com.castle.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,8 +13,6 @@ import org.springframework.validation.FieldError;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static com.castle.core.code.error.GlobalErrorCode.VALIDATION_FAILED;
 
 /**
  * 프로젝트 전역적으로 사용되는 REST API 에러 응답 클래스입니다.
