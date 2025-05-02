@@ -1,7 +1,10 @@
 package com.castle.security.config;
 
+import com.castle.security.filter.AuthenticatedJwtFilter;
 import com.castle.security.filter.CustomUsernamePasswordAuthenticationFilter;
 import com.castle.security.handler.CustomAccessDeniedHandler;
+import com.castle.security.handler.LoginFailureHandler;
+import com.castle.security.handler.LoginSuccessHandler;
 import com.castle.security.principal.PrincipalDetailsService;
 import com.castle.security.provider.CustomAuthenticationProvider;
 import com.castle.security.service.jwt.JwtService;

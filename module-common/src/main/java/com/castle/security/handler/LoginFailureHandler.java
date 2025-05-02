@@ -1,8 +1,6 @@
 package com.castle.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.market.common.core.code.error.AuthErrorCode;
-import com.market.common.core.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
