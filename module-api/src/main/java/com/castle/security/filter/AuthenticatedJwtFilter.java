@@ -42,6 +42,7 @@ public class AuthenticatedJwtFilter extends OncePerRequestFilter {
         try {
             String token = extractToken(request);
             if (hasText(token)) {
+
                 Authentication authentication = jwtService.createAuthentication(token);
 
                 // 1. 토큰 유효성 검증
