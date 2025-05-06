@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ChatSessionRepository는 ChatSession 엔티티에 대한 CRUD 작업을 수행하는 인터페이스입니다.
@@ -12,14 +13,7 @@ import java.util.List;
  */
 public interface ChatSessionRepository extends JpaRepository<ChatSession, Long> {
 
-    /**
-     * 주어진 chatSessionId에 해당하는 ChatSession의 memberId를 조회합니다.
-     *
-     * @param chatSessionId 조회할 ChatSession의 ID
-     * @return 해당 ChatSession의 memberId
-     */
-    @Query("SELECT cs.memberId FROM ChatSession cs WHERE cs.id = :chatSessionId")
-    Long findMemberIdByChatSessionId(Long chatSessionId);
+    Long findMemberIdById(Long chatSessionId);
 
     /**
      * 주어진 memberId에 해당하는 ChatSession을 생성일자(createdAt) 기준으로 내림차순 정렬하여 조회합니다.

@@ -31,7 +31,7 @@ public class RunPodStreamService {
      */
     @Transactional
     public SseEmitter streamToClient(String prompt, Long memberId, Long chatSessionId) {
-        if (!Objects.equals(chatSessionRepository.findMemberIdByChatSessionId(chatSessionId), memberId)) {
+        if (!Objects.equals(chatSessionRepository.findMemberIdById(chatSessionId), memberId)) {
             throw new MemberException(MemberErrorCode.FORBIDDEN_CHAT_SESSION_ACCESS);
         }
 
