@@ -1,4 +1,4 @@
-package com.castle.domain.llm.chat.entity;
+package com.castle.domain.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,8 +24,8 @@ public class ChatLog {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "dialogue_id", nullable = false)
-    private Long dialogueId;
+    @Column(name = "chat_session_id", nullable = false)
+    private Long chatSessionId;
 
     @Lob
     @Column(columnDefinition = "TEXT", nullable = false)

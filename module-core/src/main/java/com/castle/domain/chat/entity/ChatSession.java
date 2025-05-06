@@ -1,4 +1,4 @@
-package com.castle.domain.llm.chat.entity;
+package com.castle.domain.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,16 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Dialogue 엔티티 클래스입니다.
- * 이 클래스는 채팅기록들의 집합을 저장하는 데 사용;됩니다.
+ * ChatSession 엔티티 클래스입니다.
+ * 이 클래스는 사용자의 대화 세션을 저장하는 데 사용됩니다.
  */
 @Entity
-@Table(name = "dialogue")
+@Table(name = "chat_session")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Dialogue {
+public class ChatSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +32,6 @@ public class Dialogue {
     @Column(name = "createAt", nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "dialogue", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chat_session", cascade = CascadeType.ALL)
     private List<ChatLog> logs = new ArrayList<>();
 }

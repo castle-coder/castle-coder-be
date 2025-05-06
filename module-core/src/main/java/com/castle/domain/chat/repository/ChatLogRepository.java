@@ -1,6 +1,6 @@
-package com.castle.domain.llm.chat.repository;
+package com.castle.domain.chat.repository;
 
-import com.castle.domain.llm.chat.entity.ChatLog;
+import com.castle.domain.chat.entity.ChatLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

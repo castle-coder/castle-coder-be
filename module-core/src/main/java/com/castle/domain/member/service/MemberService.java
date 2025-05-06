@@ -1,8 +1,8 @@
 package com.castle.domain.member.service;
 
 import com.castle.code.error.MemberErrorCode;
-import com.castle.domain.llm.chat.entity.Dialogue;
-import com.castle.domain.llm.chat.repository.DialogueRepository;
+import com.castle.domain.chat.entity.ChatSession;
+import com.castle.domain.chat.repository.ChatSessionRepository;
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.repository.MemberRepository;
 import com.castle.exception.MemberException;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final DialogueRepository dialogueRepository;
+    private final ChatSessionRepository chatSessionRepository;
 
     /**
      * 회원 가입을 위한 서비스 로직
@@ -36,7 +36,7 @@ public class MemberService {
         }
         memberRepository.save(member);
 
-        initDialogue(member);
+        initChatSession(member);
     }
 
     /**
@@ -44,12 +44,12 @@ public class MemberService {
      * @param member
      */
     @Transactional
-    public void initDialogue(Member member) {
-        Dialogue dialogue = Dialogue.builder()
+    public void initChatSession(Member member) {
+        ChatSession chatSession = ChatSession.builder()
                 .memberId(member.getId())
                 .createdAt(LocalDateTime.now())
                 .build();
-        dialogueRepository.save(dialogue);
+        chatSessionRepository.save(chatSession);
     }
 
     /**

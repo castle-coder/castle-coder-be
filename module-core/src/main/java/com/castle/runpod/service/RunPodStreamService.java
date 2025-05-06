@@ -2,9 +2,9 @@ package com.castle.runpod.service;
 
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.error.RunPodErrorCode;
-import com.castle.domain.llm.chat.entity.ChatLog;
-import com.castle.domain.llm.chat.repository.ChatLogRepository;
-import com.castle.domain.llm.chat.repository.DialogueRepository;
+import com.castle.domain.chat.entity.ChatLog;
+import com.castle.domain.chat.repository.ChatLogRepository;
+import com.castle.domain.chat.repository.ChatSessionRepository;
 import com.castle.exception.MemberException;
 import com.castle.exception.RunPodException;
 import com.castle.runpod.grpc.RunPodGrpcClient;
@@ -24,15 +24,15 @@ public class RunPodStreamService {
 
     private final RunPodGrpcClient runPodGrpcClient;
     private final ChatLogRepository chatLogRepository;
-    private final DialogueRepository dialogueRepository;
+    private final ChatSessionRepository chatSessionRepository;
 
     /**
      * 프론트엔드에 SSE를 통해 스트리밍 전송한다.
      */
     @Transactional
-    public SseEmitter streamToClient(String prompt, Long memberId, Long dialogueId) {
-        if (!Objects.equals(dialogueRepository.findMemberIdByDialogueId(dialogueId), memberId)) {
-            throw new MemberException(MemberErrorCode.FORBIDDEN_DIALOGUE_ACCESS);
+    public SseEmitter streamToClient(String prompt, Long memberId, Long chatSessionId) {
+        if (!Objects.equals(chatSessionRepository.findMemberIdByChatSessionId(chatSessionId), memberId)) {
+            throw new MemberException(MemberErrorCode.FORBIDDEN_CHAT_SESSION_ACCESS);
         }
 
         SseEmitter emitter = new SseEmitter(0L);
@@ -68,7 +68,7 @@ public class RunPodStreamService {
                             }
 
                             chatLogRepository.save(ChatLog.builder()
-                                    .dialogueId(dialogueId)
+                                    .chatSessionId(chatSessionId)
                                     .memberId(memberId)
                                     .prompt(prompt)
                                     .response(responseBuilder.toString())
