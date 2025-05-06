@@ -12,6 +12,8 @@ import com.castle.exception.MemberException;
 import com.castle.exception.RunPodException;
 import com.castle.runpod.grpc.RunPodGrpcClient;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
@@ -42,10 +45,13 @@ public class RunPodStreamService {
         }
 
         SseEmitter emitter = new SseEmitter(0L);
+        AtomicBoolean isCompleted = new AtomicBoolean(false);
         StringBuilder responseBuilder = new StringBuilder(); // 응답 텍스트를 누적
+        SecurityContext context = SecurityContextHolder.getContext();
 
         // 별도 스레드에서 RunPod 호출 및 스트리밍 실행
         new Thread(() -> {
+            SecurityContextHolder.setContext(context);
             try {
                 String grpcTarget = runPodGrpcClient.runAndGetGrpcTarget(prompt);
                 if (grpcTarget == null) {
@@ -59,54 +65,68 @@ public class RunPodStreamService {
                         prompt,
                         token -> {
                             responseBuilder.append(token); // 응답 누적
-
                             try {
-                                emitter.send(SseEmitter.event().name("message").data(token));
+                                if (!isCompleted.get()) {
+                                    emitter.send(SseEmitter.event().name("message").data(token));
+                                    responseBuilder.append(token);
+                                }
+                            } catch (IllegalStateException ignore) {
+                                isCompleted.set(true);
                             } catch (IOException e) {
+                                isCompleted.set(true);
                                 emitter.completeWithError(e);
                             }
                         },
                         () -> {
-                            try {
-                                emitter.send(SseEmitter.event().name("end").data("[생성 완료]"));
-                            } catch (IOException e) {
-                                // 전송 실패는 무시하고 완료
+                            if (isCompleted.compareAndSet(false, true)) {
+
+                                try {
+                                    emitter.send(SseEmitter.event().name("end").data("[생성 완료]"));
+                                } catch (IOException e) {
+                                    // 전송 실패는 무시하고 완료
+                                }
+
+                                chatLogRepository.save(ChatLog.builder()
+                                        .chatSession(chatSession)
+                                        .member(chatSession.getMember())
+                                        .prompt(prompt)
+                                        .response(responseBuilder.toString())
+                                        .build());
+
+                                emitter.complete();
                             }
-
-                            chatLogRepository.save(ChatLog.builder()
-                                    .chatSession(chatSession)
-                                    .member(chatSession.getMember())
-                                    .prompt(prompt)
-                                    .response(responseBuilder.toString())
-                                    .build());
-
-                            emitter.complete();
                         },
                         error -> {
-                            // RunPodErrorCode 매핑 예시
-                            RunPodErrorCode errorCode;
+                            if (isCompleted.compareAndSet(false, true)) {
+                                // RunPodErrorCode 매핑 예시
+                                RunPodErrorCode errorCode;
 
-                            if (error instanceof TimeoutException) {
-                                errorCode = RunPodErrorCode.RUNPOD_API_TIMEOUT;
-                            } else if (error instanceof ConnectException) {
-                                errorCode = RunPodErrorCode.RUNPOD_CONNECTION_FAILED;
-                            } else {
-                                errorCode = RunPodErrorCode.RUNPOD_API_INTERNAL_ERROR;
+                                if (error instanceof TimeoutException) {
+                                    errorCode = RunPodErrorCode.RUNPOD_API_TIMEOUT;
+                                } else if (error instanceof ConnectException) {
+                                    errorCode = RunPodErrorCode.RUNPOD_CONNECTION_FAILED;
+                                } else {
+                                    errorCode = RunPodErrorCode.RUNPOD_API_INTERNAL_ERROR;
+                                }
+
+                                try {
+                                    emitter.send(SseEmitter.event()
+                                            .name("error")
+                                            .data(errorCode.getErrorResponse())); // JSON으로 직렬화 필요 시 변환
+                                } catch (IOException ioException) {
+                                    // 전송 실패 시 그냥 종료
+                                }
+
+                                emitter.completeWithError(error);
                             }
-
-                            try {
-                                emitter.send(SseEmitter.event()
-                                        .name("error")
-                                        .data(errorCode.getErrorResponse())); // JSON으로 직렬화 필요 시 변환
-                            } catch (IOException ioException) {
-                                // 전송 실패 시 그냥 종료
-                            }
-
-                            emitter.completeWithError(error);
                         }
                 );
             } catch (Exception ex) {
-                emitter.completeWithError(ex);
+                if (isCompleted.compareAndSet(false, true)) {
+                    emitter.completeWithError(ex);
+                    }
+            } finally {
+                SecurityContextHolder.clearContext();
             }
         }).start();
 
