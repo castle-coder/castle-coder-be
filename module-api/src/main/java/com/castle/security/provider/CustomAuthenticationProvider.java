@@ -28,10 +28,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         // 사용자 식별자와 비밀번호 추출
         String email = authentication.getName();
         String rawPassword = (String) authentication.getCredentials();
-        String role = authentication.getAuthorities().iterator().next().getAuthority();
 
         // DB에서 사용자 정보 로드 (UserDetails 객체는 DB에 저장된 권한을 포함)
-        UserDetails userDetails = userDetailsService.loadUserByUsernameAndRole(email, role);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
         // 비밀번호 검증
         if (!passwordEncoder.matches(rawPassword, userDetails.getPassword())) {

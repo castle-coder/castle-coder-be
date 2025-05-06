@@ -138,7 +138,10 @@ public class SecurityConfig {
      */
     private RequestMatcher[] authenticatedRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
-                antMatcher(POST, "/runpod/stream") // ai 모델 응답 요청
+                antMatcher(POST, "/runpod/stream"), // ai 모델 응답 요청
+
+                antMatcher(GET, "/member/profiles"), // 회원 프로필 조회
+                antMatcher(DELETE, "/member/withdraw") // 회원 탈퇴
 
         );
 
@@ -152,7 +155,13 @@ public class SecurityConfig {
         List<RequestMatcher> requestMatchers = List.of(
                 // swagger
                 antMatcher(GET, "/swagger-ui/**"), // Swagger UI 웹 인터페이스를 제공하는 경로
-                antMatcher(GET, "/v3/api-docs/**") // Swagger의 API 문서 데이터를 JSON 형식으로 제공하는 경로
+                antMatcher(GET, "/v3/api-docs/**"), // Swagger의 API 문서 데이터를 JSON 형식으로 제공하는 경로
+
+                antMatcher(GET, "/utils/health"), // 헬스 체크
+
+                antMatcher(POST, "/auth/login"), // 로그인
+                antMatcher(POST, "/member/sign-up"), // 회원가입
+                antMatcher(GET, "/member/check-email") // 이메일 중복확인
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);
