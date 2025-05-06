@@ -34,4 +34,11 @@ public class MemberService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER_ID));
     }
+
+    @Transactional(readOnly = true)
+    public void isEmailDuplicate(String email) {
+        if (memberRepository.findByEmail(email).isPresent()) {
+            throw new MemberException(MemberErrorCode.EXIST_MEMBER_EMAIL);
+        }
+    }
 }
