@@ -2,7 +2,6 @@ package com.castle.runpod.service;
 
 import com.castle.runpod.grpc.RunPodGrpcClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -11,13 +10,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class RunPodStreamService {
 
     private final RunPodGrpcClient runPodGrpcClient;
-
-    @Value("${runpod.api.endpoint}")
-    private String endpointId;
-
-    @Value("${runpod.api.key}")
-    private String apiKey;
-
 
     /**
      * 프론트엔드에 SSE를 통해 스트리밍 전송한다.
@@ -28,7 +20,7 @@ public class RunPodStreamService {
         // 별도 스레드에서 RunPod 호출 및 스트리밍 실행
         new Thread(() -> {
             try {
-                String grpcTarget = runPodGrpcClient.runAndGetGrpcTarget(endpointId, apiKey, prompt);
+                String grpcTarget = runPodGrpcClient.runAndGetGrpcTarget(prompt);
                 if (grpcTarget == null) {
                     emitter.completeWithError(new IllegalStateException("gRPC target not found"));
                     return;

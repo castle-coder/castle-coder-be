@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
-@RequestMapping("/runpod")
+@RequestMapping("/llm")
 @RequiredArgsConstructor
 @Tag(name = "AI 통신", description = "AI 통신 관련 API")
 public class RunPodStreamController {
@@ -26,16 +26,33 @@ public class RunPodStreamController {
      * 프론트엔드에서 prompt 파라미터를 받아 SSE 스트림으로 응답 전송
      */
     @Operation(
-            summary = "ai 모델 응답 요청",
-            description = "헬스 체킹을 진행합니다."
+            summary = "ai 모델 코드 생성 요청",
+            description = "ai 모델 코드 생성 요청합니다."
     )
     @SecurityRequirements(value = {})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "헬스 체크 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "200", description = "코드 생성 성공", useReturnTypeSchema = true),
     })
     @CrossOrigin(origins = "http://localhost:63342")
-    @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter codeGenerate(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
+    @PostMapping(value = "/generate-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter generateCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
         return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()));
+    }
+
+    /**
+     * 프론트엔드에서 code prompt 파라미터를 받아 SSE 스트림으로 응답 전송
+     */
+    @Operation(
+            summary = "ai 모델 코드 보안 리팩토링 요청",
+            description = "ai 모델 코드 보안 리팩토링 요청합니다."
+    )
+    @SecurityRequirements(value = {})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "코드 생성 성공", useReturnTypeSchema = true),
+    })
+    @CrossOrigin(origins = "http://localhost:63342")
+    @PostMapping(value = "/refactor-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter refactorCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
+        return runPodStreamService.streamToClient(request.appendInstruction(), Long.parseLong(principalDetails.getUsername()));
     }
 }
