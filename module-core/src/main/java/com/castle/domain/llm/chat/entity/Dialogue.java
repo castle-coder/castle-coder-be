@@ -27,7 +27,7 @@ public class Dialogue {
     private Long memberId;
 
     @Column(name = "title")
-    private String title;
+    private String title = "New Chat";
 
     @Column(name = "createAt", nullable = false)
     private LocalDateTime createdAt;
