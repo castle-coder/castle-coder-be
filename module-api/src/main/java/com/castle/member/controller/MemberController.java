@@ -3,6 +3,7 @@ package com.castle.member.controller;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.success.GlobalSuccessCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
+import com.castle.documentation.annotation.ApiErrorCodeExamples;
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.service.MemberService;
 import com.castle.member.dto.request.SignUpRequest;
@@ -77,6 +78,24 @@ public class MemberController {
             @Parameter(description = "중복확인을 받으려는 이메일 값입니다.(중복 시 error)")
             @RequestParam("email") String email) {
         memberService.isEmailDuplicate(email);
+        return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
+    }
+
+
+    @Operation(
+            summary = "회원 탈퇴",
+            description = "Oauth 및 기본 회원가입에 대한 회원 탈퇴 기능."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공", useReturnTypeSchema = true),
+    })
+    @ApiErrorCodeExamples({
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID"),
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "CANNOT_WITHDRAW_MEMBER")
+    })
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<BfResponse<Void>> refreshTokens(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        memberService.withdraw(Long.parseLong(principalDetails.getUsername()));
         return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
     }
 }

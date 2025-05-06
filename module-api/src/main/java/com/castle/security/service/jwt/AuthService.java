@@ -1,22 +1,22 @@
-package com.castle.security.service;
+package com.castle.security.service.jwt;
 
+import com.castle.code.error.JwtErrorCode;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.domain.member.dto.MemberJwtDto;
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.repository.MemberRepository;
+import com.castle.exception.JwtException;
 import com.castle.exception.MemberException;
+import com.castle.security.dto.request.RefreshTokenRequest;
 import com.castle.security.dto.response.JwtTokenResponse;
-import com.castle.security.service.jwt.JwtService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
- * OAuth 인증과 JWT 토큰 생성을 관리하는 서비스 클래스입니다.
+ * JWT 토큰 생성을 관리하는 서비스 클래스입니다.
  */
 @Service
 @Slf4j
@@ -50,19 +50,6 @@ public class AuthService {
         MemberJwtDto memberJwtDto = new MemberJwtDto(member);
 
         return createAccessTokenAndRefreshToken(memberJwtDto);
-    }
-
-    /**
-     * 회원 탈퇴를 위한 서비스 로직
-     * @param memberId 탈퇴하고자 하는 회원의 id
-     */
-    @Transactional
-    public void withdraw(Long memberId){
-        // DB 조회
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER_ID));
-        // 로그인 회원탈퇴
-        member.updateIsActive(false);
     }
 
     /**
