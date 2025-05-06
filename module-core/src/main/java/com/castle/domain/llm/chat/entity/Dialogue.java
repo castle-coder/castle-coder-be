@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Dialogue 엔티티 클래스입니다.
- * 이 클래스는 채팅기록들의 집합을 저장하는 데 사용됩니다.
+ * 이 클래스는 채팅기록들의 집합을 저장하는 데 사용;됩니다.
  */
 @Entity
 @Table(name = "dialogue")
