@@ -1,12 +1,13 @@
 package com.castle.chat.controller;
 
+import com.castle.code.error.ChatErrorCode;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.success.GlobalSuccessCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
+import com.castle.documentation.annotation.ApiErrorCodeExamples;
 import com.castle.domain.chat.dto.request.ChatLogsReadResponse;
 import com.castle.domain.chat.dto.request.ChatSessionsReadResponse;
 import com.castle.domain.chat.service.ChatService;
-import com.castle.member.dto.request.SignUpRequest;
 import com.castle.response.BfResponse;
 import com.castle.security.principal.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,7 +48,11 @@ public class ChatController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "READ 성공")
     })
-    @GetMapping("/chat-logs")
+    @ApiErrorCodeExamples({
+            @ApiErrorCodeExample(errorClass = ChatErrorCode.class, field = "NOT_FOUND_CHAT_SESSION"),
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_CHAT_SESSION_ACCESS")
+    })
+    @GetMapping("/logs")
     public ResponseEntity<BfResponse<List<ChatLogsReadResponse>>> readChatLogs(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam Long chatSessionId) {
         return ResponseEntity.ok(new BfResponse<>(chatService.getChatLogs(Long.parseLong(principalDetails.getUsername()), chatSessionId)));
     }
@@ -58,6 +63,9 @@ public class ChatController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "세션 추가 성공")
+    })
+    @ApiErrorCodeExamples({
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID")
     })
     @PostMapping("/sessions")
     public ResponseEntity<BfResponse<Void>> appendChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails) {
@@ -71,6 +79,10 @@ public class ChatController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "세션 삭제 성공")
+    })
+    @ApiErrorCodeExamples({
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID"),
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_CHAT_SESSION_ACCESS")
     })
     @DeleteMapping("/sessions")
     public ResponseEntity<BfResponse<Void>> appendChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam Long chatSessionId) {

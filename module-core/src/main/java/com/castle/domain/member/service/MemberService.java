@@ -46,7 +46,7 @@ public class MemberService {
     @Transactional
     public void initChatSession(Member member) {
         ChatSession chatSession = ChatSession.builder()
-                .memberId(member.getId())
+                .member(member)
                 .createdAt(LocalDateTime.now())
                 .build();
         chatSessionRepository.save(chatSession);

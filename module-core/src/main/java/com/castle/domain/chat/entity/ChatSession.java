@@ -1,5 +1,6 @@
 package com.castle.domain.chat.entity;
 
+import com.castle.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,8 +24,9 @@ public class ChatSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "member_id", nullable = false)
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(name = "title")
     private String title = "New Chat";
@@ -32,7 +34,7 @@ public class ChatSession {
     @Column(name = "createAt", nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "chat_session", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chatSession", cascade = CascadeType.ALL)
     private List<ChatLog> logs = new ArrayList<>();
 
     public List<ChatLog> getChatLogs() {

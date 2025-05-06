@@ -7,6 +7,8 @@ import com.castle.domain.chat.dto.request.ChatSessionsReadResponse;
 import com.castle.domain.chat.entity.ChatLog;
 import com.castle.domain.chat.entity.ChatSession;
 import com.castle.domain.chat.repository.ChatSessionRepository;
+import com.castle.domain.member.entity.Member;
+import com.castle.domain.member.repository.MemberRepository;
 import com.castle.exception.ChatException;
 import com.castle.exception.MemberException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatService {
     private final ChatSessionRepository chatSessionRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public List<ChatSessionsReadResponse> getChatSessions(Long memberId) {
@@ -36,7 +39,7 @@ public class ChatService {
         ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));
 
-        if (!Objects.equals(chatSession.getMemberId(), memberId)) {
+        if (!Objects.equals(chatSession.getMember().getId(), memberId)) {
             throw new MemberException(MemberErrorCode.FORBIDDEN_CHAT_SESSION_ACCESS);
         }
         List<ChatLog> chatLogs = chatSession.getChatLogs();
@@ -48,8 +51,11 @@ public class ChatService {
 
     @Transactional
     public void appendChatSession(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER_ID));
+
         chatSessionRepository.save(ChatSession.builder()
-                .memberId(memberId)
+                .member(member)
                 .createdAt(LocalDateTime.now())
                 .build());
     }
@@ -59,7 +65,7 @@ public class ChatService {
         ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));
 
-        if (!Objects.equals(chatSession.getMemberId(), memberId)) {
+        if (!Objects.equals(chatSession.getMember().getId(), memberId)) {
             throw new MemberException(MemberErrorCode.FORBIDDEN_CHAT_SESSION_ACCESS);
         }
 

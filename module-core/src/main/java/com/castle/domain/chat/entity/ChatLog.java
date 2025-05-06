@@ -1,5 +1,6 @@
 package com.castle.domain.chat.entity;
 
+import com.castle.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,11 +22,13 @@ public class ChatLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "member_id", nullable = false)
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    @Column(name = "chat_session_id", nullable = false)
-    private Long chatSessionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_session_id")
+    private ChatSession chatSession;
 
     @Lob
     @Column(name = "prompt", columnDefinition = "TEXT", nullable = false)

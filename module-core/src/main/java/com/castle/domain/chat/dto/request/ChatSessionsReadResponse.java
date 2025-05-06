@@ -26,7 +26,7 @@ public class ChatSessionsReadResponse {
     public static ChatSessionsReadResponse fromEntity(ChatSession session) {
         return ChatSessionsReadResponse.builder()
                 .id(session.getId())
-                .memberId(session.getMemberId())
+                .memberId(session.getMember().getId())
                 .title(session.getTitle())
                 .createdAt(session.getCreatedAt())
                 .build();

@@ -1,10 +1,13 @@
 package com.castle.runpod.service;
 
+import com.castle.code.error.ChatErrorCode;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.error.RunPodErrorCode;
 import com.castle.domain.chat.entity.ChatLog;
+import com.castle.domain.chat.entity.ChatSession;
 import com.castle.domain.chat.repository.ChatLogRepository;
 import com.castle.domain.chat.repository.ChatSessionRepository;
+import com.castle.exception.ChatException;
 import com.castle.exception.MemberException;
 import com.castle.exception.RunPodException;
 import com.castle.runpod.grpc.RunPodGrpcClient;
@@ -31,7 +34,10 @@ public class RunPodStreamService {
      */
     @Transactional
     public SseEmitter streamToClient(String prompt, Long memberId, Long chatSessionId) {
-        if (!Objects.equals(chatSessionRepository.findMemberIdById(chatSessionId), memberId)) {
+        ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));
+
+        if (!Objects.equals(chatSession.getMember().getId(), memberId)) {
             throw new MemberException(MemberErrorCode.FORBIDDEN_CHAT_SESSION_ACCESS);
         }
 
@@ -68,8 +74,8 @@ public class RunPodStreamService {
                             }
 
                             chatLogRepository.save(ChatLog.builder()
-                                    .chatSessionId(chatSessionId)
-                                    .memberId(memberId)
+                                    .chatSession(chatSession)
+                                    .member(chatSession.getMember())
                                     .prompt(prompt)
                                     .response(responseBuilder.toString())
                                     .build());

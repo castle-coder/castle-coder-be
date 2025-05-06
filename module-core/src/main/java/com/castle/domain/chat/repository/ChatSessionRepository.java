@@ -13,8 +13,6 @@ import java.util.Optional;
  */
 public interface ChatSessionRepository extends JpaRepository<ChatSession, Long> {
 
-    Long findMemberIdById(Long chatSessionId);
-
     /**
      * 주어진 memberId에 해당하는 ChatSession을 생성일자(createdAt) 기준으로 내림차순 정렬하여 조회합니다.
      *

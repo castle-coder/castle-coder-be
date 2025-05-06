@@ -29,7 +29,7 @@ public class ChatLogsReadResponse {
     public static ChatLogsReadResponse fromEntity(ChatLog chatLog) {
         return ChatLogsReadResponse.builder()
                 .id(chatLog.getId())
-                .memberId(chatLog.getMemberId())
+                .memberId(chatLog.getMember().getId())
                 .prompt(chatLog.getPrompt())
                 .response(chatLog.getResponse())
                 .createdAt(chatLog.getCreatedAt())
