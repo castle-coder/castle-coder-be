@@ -40,6 +40,18 @@ public class ChatController {
     }
 
     @Operation(
+            summary = "채팅 로그 READ",
+            description = "채팅 세션에 맞는 채팅 로그들을 읽어오는 API입니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "READ 성공")
+    })
+    @GetMapping("/chat-logs")
+    public ResponseEntity<BfResponse<List<ChatLogsReadResponse>>> readChatLogs(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam Long chatSessionId) {
+        return ResponseEntity.ok(new BfResponse<>(chatService.getChatlogs(Long.parseLong(principalDetails.getUsername()), chatSessionId)));
+    }
+
+    @Operation(
             summary = "채팅 세션 추가",
             description = "사용자의 채팅 세션을 하나 추가합니다."
     )
