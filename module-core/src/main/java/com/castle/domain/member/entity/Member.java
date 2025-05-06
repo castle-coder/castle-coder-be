@@ -41,4 +41,8 @@ public class Member {
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive; // 활성화 여부
+
+    public void updateIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
 }
