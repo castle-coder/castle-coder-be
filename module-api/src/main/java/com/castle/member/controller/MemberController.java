@@ -1,19 +1,17 @@
 package com.castle.member.controller;
 
+import com.castle.code.error.MemberErrorCode;
 import com.castle.code.success.GlobalSuccessCode;
+import com.castle.documentation.annotation.ApiErrorCodeExample;
 import com.castle.domain.member.service.MemberService;
 import com.castle.member.dto.request.SignUpRequest;
 import com.castle.response.BfResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +34,8 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원가입 성공")
     })
+    @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "EXIST_MEMBER_EMAIL")
+    @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "EXIST_PHONE_NUMBER")
     @PostMapping("/sign-up")
     public ResponseEntity<BfResponse<Void>> signUp(@RequestBody SignUpRequest request) {
         // 비밀번호 암호화 및 회원가입
