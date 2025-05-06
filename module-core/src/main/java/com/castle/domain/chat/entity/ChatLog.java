@@ -28,11 +28,11 @@ public class ChatLog {
     private Long chatSessionId;
 
     @Lob
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(name = "prompt", columnDefinition = "TEXT", nullable = false)
     private String prompt;
 
     @Lob
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "response", columnDefinition = "TEXT")
     private String response;
 
     @Column(name = "create_at", nullable = false)

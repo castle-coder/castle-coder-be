@@ -3,6 +3,7 @@ package com.castle.chat.controller;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.success.GlobalSuccessCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
+import com.castle.domain.chat.dto.request.ChatLogsReadResponse;
 import com.castle.domain.chat.dto.request.ChatSessionsReadResponse;
 import com.castle.domain.chat.service.ChatService;
 import com.castle.member.dto.request.SignUpRequest;
