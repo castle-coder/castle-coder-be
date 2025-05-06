@@ -22,6 +22,8 @@ dependencies {
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
     compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+
+
 }
 
 // 프로토콜 버퍼 컴파일러(protoc) 설정

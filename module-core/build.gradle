@@ -8,4 +8,6 @@ dependencies {
     implementation project(":module-infra")
     testImplementation 'org.springframework.security:spring-security-test'
     runtimeOnly 'org.postgresql:postgresql'
+
+    implementation project(":module-common")
 }
