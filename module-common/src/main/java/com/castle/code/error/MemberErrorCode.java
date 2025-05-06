@@ -9,6 +9,10 @@ import org.springframework.http.HttpStatus;
  */
 @Getter
 public enum MemberErrorCode implements BaseErrorCode {
+
+    // 403 FORBIDDEN
+    FORBIDDEN_CHAT_SESSION_ACCESS(403, "회원과 해당 대화 세션의 권한이 일치하지 않습니다.", HttpStatus.FORBIDDEN),
+
     // 404 NOT_FOUND
     NOT_FOUND_MEMBER_ID(404, "존재하지 않는 회원입니다.", HttpStatus.NOT_FOUND),
 

@@ -1,13 +1,16 @@
 package com.castle.domain.member.service;
 
 import com.castle.code.error.MemberErrorCode;
+import com.castle.domain.chat.entity.ChatSession;
+import com.castle.domain.chat.repository.ChatSessionRepository;
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.repository.MemberRepository;
 import com.castle.exception.MemberException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 /**
  * 회원 서비스 클래스입니다.
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final ChatSessionRepository chatSessionRepository;
 
     /**
      * 회원 가입을 위한 서비스 로직
@@ -31,6 +35,21 @@ public class MemberService {
             throw new MemberException(MemberErrorCode.EXIST_PHONE_NUMBER);
         }
         memberRepository.save(member);
+
+        initChatSession(member);
+    }
+
+    /**
+     * 회원 가입 시 대화 세션을 초기화하는 서비스 로직
+     * @param member
+     */
+    @Transactional
+    public void initChatSession(Member member) {
+        ChatSession chatSession = ChatSession.builder()
+                .member(member)
+                .createdAt(LocalDateTime.now())
+                .build();
+        chatSessionRepository.save(chatSession);
     }
 
     /**
