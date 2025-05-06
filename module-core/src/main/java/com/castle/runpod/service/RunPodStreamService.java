@@ -22,7 +22,7 @@ public class RunPodStreamService {
     /**
      * 프론트엔드에 SSE를 통해 스트리밍 전송한다.
      */
-    public SseEmitter streamToClient(String prompt) {
+    public SseEmitter streamToClient(String prompt, Long memberId) {
         SseEmitter emitter = new SseEmitter(0L);
 
         // 별도 스레드에서 RunPod 호출 및 스트리밍 실행

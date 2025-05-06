@@ -1,6 +1,8 @@
 package com.castle.runpod.controller;
 
+import com.castle.runpod.dto.request.CodeGenerateRequest;
 import com.castle.runpod.service.RunPodStreamService;
+import com.castle.security.principal.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -8,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -32,7 +35,7 @@ public class RunPodStreamController {
     })
     @CrossOrigin(origins = "http://localhost:63342")
     @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter stream(@RequestParam String prompt) {
-        return runPodStreamService.streamToClient(prompt);
+    public SseEmitter codeGenerate(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
+        return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()));
     }
 }
