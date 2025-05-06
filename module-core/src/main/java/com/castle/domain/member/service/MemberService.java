@@ -28,4 +28,10 @@ public class MemberService {
         }
         memberRepository.save(member);
     }
+
+    @Transactional(readOnly = true)
+    public Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER_ID));
+    }
 }

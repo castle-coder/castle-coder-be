@@ -3,8 +3,10 @@ package com.castle.member.controller;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.success.GlobalSuccessCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
+import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.service.MemberService;
 import com.castle.member.dto.request.SignUpRequest;
+import com.castle.member.dto.response.ProfileReadResponseDto;
 import com.castle.response.BfResponse;
 import com.castle.security.principal.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,7 +60,8 @@ public class MemberController {
     @GetMapping("/profiles")
     public ResponseEntity<BfResponse<ProfileReadResponseDto>> readMemberProfile(
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        return ResponseEntity.ok(new BfResponse<>(memberService.readMemberProfile(Long.parseLong(principalDetails.getUsername()))));
+        Member member = memberService.getMemberById(Long.parseLong(principalDetails.getUsername()));
+        return ResponseEntity.ok(new BfResponse<>(ProfileReadResponseDto.from(member)));
     }
 
     @Operation(
