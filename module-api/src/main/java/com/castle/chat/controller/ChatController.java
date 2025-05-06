@@ -49,7 +49,7 @@ public class ChatController {
     })
     @GetMapping("/chat-logs")
     public ResponseEntity<BfResponse<List<ChatLogsReadResponse>>> readChatLogs(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam Long chatSessionId) {
-        return ResponseEntity.ok(new BfResponse<>(chatService.getChatlogs(Long.parseLong(principalDetails.getUsername()), chatSessionId)));
+        return ResponseEntity.ok(new BfResponse<>(chatService.getChatLogs(Long.parseLong(principalDetails.getUsername()), chatSessionId)));
     }
 
     @Operation(

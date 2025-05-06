@@ -34,4 +34,8 @@ public class ChatSession {
 
     @OneToMany(mappedBy = "chat_session", cascade = CascadeType.ALL)
     private List<ChatLog> logs = new ArrayList<>();
+
+    public List<ChatLog> getChatLogs() {
+        return logs;
+    }
 }
