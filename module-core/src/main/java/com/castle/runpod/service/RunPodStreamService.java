@@ -67,7 +67,7 @@ public class RunPodStreamService {
                                 // 전송 실패는 무시하고 완료
                             }
 
-                            chatLogRepository.saveChatLog(ChatLog.builder()
+                            chatLogRepository.save(ChatLog.builder()
                                     .dialogueId(dialogueId)
                                     .memberId(memberId)
                                     .prompt(prompt)

@@ -8,6 +8,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * JpaRepository를 상속받아 기본적인 CRUD 메서드를 제공합니다.
  */
 public interface ChatLogRepository extends JpaRepository<ChatLog, Long> {
-
-    void saveChatLog(ChatLog chatLog);
 }
