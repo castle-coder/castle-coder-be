@@ -21,6 +21,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // 회원 정보를 이메일과 역할로 조회하는 메서드
     Optional<Member> findByEmailAndRoles(String email, RolesType role);
-
-    void updateMemberByIsActive(Long id, boolean isActive);
 }

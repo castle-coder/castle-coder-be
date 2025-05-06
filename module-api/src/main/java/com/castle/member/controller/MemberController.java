@@ -91,7 +91,6 @@ public class MemberController {
     })
     @ApiErrorCodeExamples({
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID"),
-            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "CANNOT_WITHDRAW_MEMBER")
     })
     @DeleteMapping("/withdraw")
     public ResponseEntity<BfResponse<Void>> refreshTokens(@AuthenticationPrincipal PrincipalDetails principalDetails) {
