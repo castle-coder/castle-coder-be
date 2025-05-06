@@ -80,6 +80,42 @@ jobs:
               echo "RUNPOD_ENDPOINT=${{ secrets.RUNPOD_ENDPOINT }}" >> .env
             fi
             
+            if grep -q "^DB_USERNAME=" .env; then
+              sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${{ secrets.DB_USERNAME }}/" .env
+            else
+              echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+            fi
+            
+            if grep -q "^DB_URL=" .env; then
+              sed -i "s/^DB_URL=.*/DB_URL=${{ secrets.DB_URL }}/" .env
+            else
+              echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+            fi
+            
+            if grep -q "^DB_PASSWORD=" .env; then
+              sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${{ secrets.DB_PASSWORD }}/" .env
+            else
+              echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            fi
+            
+            if grep -q "^ACCESS_EXPIRATION_SECONDS=" .env; then
+              sed -i "s/^ACCESS_EXPIRATION_SECONDS=.*/ACCESS_EXPIRATION_SECONDS=${{ secrets.ACCESS_EXPIRATION_SECONDS }}/" .env
+            else
+              echo "ACCESS_EXPIRATION_SECONDS=${{ secrets.ACCESS_EXPIRATION_SECONDS }}" >> .env
+            fi
+            
+            if grep -q "^JWT_SECRET_KEY=" .env; then
+              sed -i "s/^JWT_SECRET_KEY=.*/JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}/" .env
+            else
+              echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+            fi
+            
+            if grep -q "^REFRESH_EXPIRATION_SECONDS=" .env; then
+              sed -i "s/^REFRESH_EXPIRATION_SECONDS=.*/REFRESH_EXPIRATION_SECONDS=${{ secrets.REFRESH_EXPIRATION_SECONDS }}/" .env
+            else
+              echo "REFRESH_EXPIRATION_SECONDS=${{ secrets.REFRESH_EXPIRATION_SECONDS }}" >> .env
+            fi
+            
             docker stop castle-coder-be || true
             docker rm castle-coder-be || true
 

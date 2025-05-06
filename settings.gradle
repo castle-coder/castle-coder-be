@@ -3,5 +3,3 @@ include 'module-api'
 include 'module-infra'
 include 'module-core'
 include 'module-common'
-include 'module-core'
-

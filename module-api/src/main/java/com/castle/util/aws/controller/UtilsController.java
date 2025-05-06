@@ -1,7 +1,7 @@
 package com.castle.util.aws.controller;
 
-import com.castle.core.response.BfResponse;
-import com.castle.core.code.success.GlobalSuccessCode;
+import com.castle.code.success.GlobalSuccessCode;
+import com.castle.response.BfResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

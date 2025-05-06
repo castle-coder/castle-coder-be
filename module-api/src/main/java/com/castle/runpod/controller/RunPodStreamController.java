@@ -31,7 +31,7 @@ public class RunPodStreamController {
             @ApiResponse(responseCode = "200", description = "헬스 체크 성공", useReturnTypeSchema = true),
     })
     @CrossOrigin(origins = "http://localhost:63342")
-    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter stream(@RequestParam String prompt) {
         return runPodStreamService.streamToClient(prompt);
     }
