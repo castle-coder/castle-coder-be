@@ -138,7 +138,8 @@ public class SecurityConfig {
      */
     private RequestMatcher[] authenticatedRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
-                antMatcher(POST, "/runpod/stream"), // ai 모델 응답 요청
+                antMatcher(POST, "/llm/generate-code"), // ai 모델 코드 생성 요청
+                antMatcher(POST, "/llm/refactor-code"), // ai 모델 코드 리팩토링 요청
 
                 antMatcher(GET, "/member/profiles"), // 회원 프로필 조회
                 antMatcher(DELETE, "/member/withdraw") // 회원 탈퇴
