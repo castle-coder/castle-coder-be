@@ -24,8 +24,8 @@ public class ChatLog {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "post_id", nullable = false)
-    private Long postId;
+    @Column(name = "dialogue_id", nullable = false)
+    private Long dialogueId;
 
     @Lob
     @Column(columnDefinition = "TEXT", nullable = false)
