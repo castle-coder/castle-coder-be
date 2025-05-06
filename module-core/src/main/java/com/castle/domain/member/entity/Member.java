@@ -1,19 +1,17 @@
 package com.castle.domain.member.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * 회원 정보를 관리하는 엔티티 클래스입니다.
  */
 @Entity
+@Table(name = "member")
 @Getter
-@Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class Member {
 
     @Id
