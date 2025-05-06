@@ -9,6 +9,9 @@ import lombok.Getter;
 @Builder
 public class CodeGenerateRequest {
 
+    @Schema(description = "dialogue id", example = "3", required = true)
+    private final Long dialogueId;
+
     @Schema(description = "입력 프롬프트", example = "Please generate Python code for a bubble sort.", required = true)
     private final String prompt;
 

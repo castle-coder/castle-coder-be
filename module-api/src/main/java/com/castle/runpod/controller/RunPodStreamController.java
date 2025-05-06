@@ -1,5 +1,8 @@
 package com.castle.runpod.controller;
 
+import com.castle.code.error.MemberErrorCode;
+import com.castle.documentation.annotation.ApiErrorCodeExample;
+import com.castle.documentation.annotation.ApiErrorCodeExamples;
 import com.castle.runpod.dto.request.CodeGenerateRequest;
 import com.castle.runpod.service.RunPodStreamService;
 import com.castle.security.principal.PrincipalDetails;
@@ -33,10 +36,13 @@ public class RunPodStreamController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "코드 생성 성공", useReturnTypeSchema = true),
     })
+    @ApiErrorCodeExamples({
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_DIALOGUE_ACCESS"),
+    })
     @CrossOrigin(origins = "http://localhost:63342")
     @PostMapping(value = "/generate-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter generateCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
-        return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()));
+        return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getDialogueId());
     }
 
     /**
@@ -50,9 +56,12 @@ public class RunPodStreamController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "코드 생성 성공", useReturnTypeSchema = true),
     })
+    @ApiErrorCodeExamples({
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_DIALOGUE_ACCESS"),
+    })
     @CrossOrigin(origins = "http://localhost:63342")
     @PostMapping(value = "/refactor-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter refactorCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
-        return runPodStreamService.streamToClient(request.appendInstruction(), Long.parseLong(principalDetails.getUsername()));
+        return runPodStreamService.streamToClient(request.appendInstruction(), Long.parseLong(principalDetails.getUsername()), request.getDialogueId());
     }
 }
