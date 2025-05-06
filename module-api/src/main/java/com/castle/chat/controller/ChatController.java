@@ -3,6 +3,8 @@ package com.castle.chat.controller;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.success.GlobalSuccessCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
+import com.castle.domain.chat.dto.request.ChatSessionsReadResponse;
+import com.castle.domain.chat.service.ChatService;
 import com.castle.member.dto.request.SignUpRequest;
 import com.castle.response.BfResponse;
 import com.castle.security.principal.PrincipalDetails;
@@ -14,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
@@ -32,9 +36,7 @@ public class ChatController {
     })
     @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "EXIST_MEMBER_EMAIL")
     @GetMapping("/sessions")
-    public ResponseEntity<BfResponse<Void>> readChatSessions(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
-        chatService.readChatSessions(Long.parseLong(principalDetails.getUsername()));
-        return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
+    public ResponseEntity<BfResponse<List<ChatSessionsReadResponse>>> readChatSessions(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        return ResponseEntity.ok(new BfResponse<>(chatService.getChatSessions(Long.parseLong(principalDetails.getUsername()))));
     }
 }

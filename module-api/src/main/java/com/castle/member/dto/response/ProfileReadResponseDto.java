@@ -1,11 +1,9 @@
 package com.castle.member.dto.response;
 
 import com.castle.domain.member.entity.Member;
-import com.castle.domain.member.entity.RolesType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * 프로필 조회 응답 DTO 입니다.
