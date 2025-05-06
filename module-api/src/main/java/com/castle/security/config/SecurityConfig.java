@@ -104,7 +104,7 @@ public class SecurityConfig {
                         .requestMatchers(authenticatedRequestMatchers()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(authenticatedRequestMatchers())
-                        .hasAnyAuthority() // role 추가 예정
+                        .hasAnyAuthority("ROLE_USER") // role 추가 예정
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(customAccessDeniedHandler))

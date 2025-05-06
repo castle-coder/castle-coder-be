@@ -1,4 +1,0 @@
-jwt:
-  secret: ${JWT_SECRET_KEY} # JWT 서명을 위한 시크릿 키
-  access-expiration-seconds: ${ACCESS_EXPIRATION_SECONDS} # access token 만료 시간
-  refresh-expiration-seconds: ${REFRESH_EXPIRATION_SECONDS} # refresh token 만료 시간
