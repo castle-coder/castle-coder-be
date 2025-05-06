@@ -45,6 +45,7 @@ public class SignUpRequest {
                 .lastName(lastName)
                 .phoneNumber(phoneNumber)
                 .roles(RolesType.ROLE_USER)
+                .isActive(true) // 기본값으로 활성화 상태로 설정
                 .build();
     }
 }

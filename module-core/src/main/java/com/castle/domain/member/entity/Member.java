@@ -20,10 +20,10 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email; // 이메일
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password; // 비밀번호
 
     @Column(name = "first_name")
@@ -35,7 +35,10 @@ public class Member {
     @Column(name = "phoneNumber")
     private String phoneNumber; // 전화번호
 
-    @Column(name = "roles")
+    @Column(name = "roles", nullable = false)
     @Enumerated(EnumType.STRING)
     private RolesType roles; // 권한
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive; // 활성화 여부
 }
