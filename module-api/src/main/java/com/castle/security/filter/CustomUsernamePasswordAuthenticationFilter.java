@@ -26,12 +26,11 @@ import java.util.Map;
  */
 public class CustomUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final String DEFAULT_LOGIN_REQUEST_URL = "/common/auth/login";
+    private static final String DEFAULT_LOGIN_REQUEST_URL = "/auth/login";
     private static final String HTTP_METHOD = "POST";
     private static final String CONTENT_TYPE = "application/json";
     private static final String USERNAME_KEY = "email"; // 회원 로그인 시 이메일 요청 JSON Key : "email"
     private static final String PASSWORD_KEY = "password"; // 회원 로그인 시 비밀번호 요청 JSon Key : "password"
-    private static final String ROLE_KEY = "roles"; // 회원 로그인 시 권한 요청 JSon Key : "roles"
     private static final AntPathRequestMatcher DEFAULT_LOGIN_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher(DEFAULT_LOGIN_REQUEST_URL, HTTP_METHOD);
 
@@ -54,11 +53,8 @@ public class CustomUsernamePasswordAuthenticationFilter extends AbstractAuthenti
 
         String email = usernamePasswordMap.get(USERNAME_KEY);
         String password = usernamePasswordMap.get(PASSWORD_KEY);
-        String roles = usernamePasswordMap.get(ROLE_KEY);
 
-        GrantedAuthority authority = new SimpleGrantedAuthority(roles);
-
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(email, password, Collections.singleton(authority));
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(email, password);
         return this.getAuthenticationManager().authenticate(authRequest);
     }
 }
