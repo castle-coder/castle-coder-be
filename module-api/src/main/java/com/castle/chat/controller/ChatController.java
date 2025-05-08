@@ -37,7 +37,7 @@ public class ChatController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "READ 성공")
     })
-    @GetMapping("/sessions")
+    @GetMapping("/session")
     public ResponseEntity<BfResponse<List<ChatSessionsReadResponse>>> readChatSessions(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         return ResponseEntity.ok(new BfResponse<>(chatService.getChatSessions(Long.parseLong(principalDetails.getUsername()))));
     }
@@ -68,7 +68,7 @@ public class ChatController {
     @ApiErrorCodeExamples({
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID")
     })
-    @PostMapping("/sessions")
+    @PostMapping("/session")
     public ResponseEntity<BfResponse<Void>> appendChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         chatService.appendChatSession(Long.parseLong(principalDetails.getUsername()));
         return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
@@ -82,9 +82,10 @@ public class ChatController {
             @ApiResponse(responseCode = "200", description = "세션 제목 변경 성공")
     })
     @ApiErrorCodeExamples({
-            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID")
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_CHAT_SESSION_ACCESS"),
+            @ApiErrorCodeExample(errorClass = ChatErrorCode.class, field = "NOT_FOUND_CHAT_SESSION")
     })
-    @PatchMapping("/sessions")
+    @PatchMapping("/session")
     public ResponseEntity<BfResponse<Void>> updateChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody ChatSessionUpdateResponse chatSessionUpdateResponse) {
         chatService.updateChatSession(Long.parseLong(principalDetails.getUsername()), chatSessionUpdateResponse.getChatSessionId(), chatSessionUpdateResponse.getTitle());
         return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
@@ -101,7 +102,7 @@ public class ChatController {
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID"),
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_CHAT_SESSION_ACCESS")
     })
-    @DeleteMapping("/sessions")
+    @DeleteMapping("/session")
     public ResponseEntity<BfResponse<Void>> appendChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestParam Long chatSessionId) {
         chatService.deleteChatSession(Long.parseLong(principalDetails.getUsername()), chatSessionId);
         return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
