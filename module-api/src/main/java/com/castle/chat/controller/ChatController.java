@@ -74,6 +74,22 @@ public class ChatController {
     }
 
     @Operation(
+            summary = "채팅 세션 title 변경",
+            description = "채팅 세션의 제목을 변경합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "세션 제목 변경 성공")
+    })
+    @ApiErrorCodeExamples({
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID")
+    })
+    @PatchMapping("/sessions")
+    public ResponseEntity<BfResponse<Void>> updateChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody ChatSessionsUpdateResponse chatSessionsUpdateResponse) {
+        chatService.updateChatSession(Long.parseLong(principalDetails.getUsername()));
+        return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
+    }
+
+    @Operation(
             summary = "채팅 세션 삭제",
             description = "사용자의 채팅 세션을 삭제합니다."
     )
