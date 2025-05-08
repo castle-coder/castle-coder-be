@@ -61,6 +61,19 @@ public class ChatService {
     }
 
     @Transactional
+    public void updateChatSession(Long memberId, Long chatSessionId, String updateTitle) {
+        ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));
+
+        if (!Objects.equals(chatSession.getMember().getId(), memberId)) {
+            throw new MemberException(MemberErrorCode.FORBIDDEN_CHAT_SESSION_ACCESS);
+        }
+
+        chatSession.updateTitle(updateTitle);
+        chatSessionRepository.save(chatSession);
+    }
+
+    @Transactional
     public void deleteChatSession(Long memberId, Long chatSessionId) {
         ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));

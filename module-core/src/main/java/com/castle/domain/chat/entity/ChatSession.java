@@ -40,4 +40,8 @@ public class ChatSession {
     public List<ChatLog> getChatLogs() {
         return logs;
     }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
 }
