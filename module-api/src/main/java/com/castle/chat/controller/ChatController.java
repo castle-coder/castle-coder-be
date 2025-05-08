@@ -7,6 +7,7 @@ import com.castle.documentation.annotation.ApiErrorCodeExample;
 import com.castle.documentation.annotation.ApiErrorCodeExamples;
 import com.castle.domain.chat.dto.request.ChatLogsReadResponse;
 import com.castle.domain.chat.dto.request.ChatSessionsReadResponse;
+import com.castle.chat.dto.request.ChatSessionUpdateResponse;
 import com.castle.domain.chat.service.ChatService;
 import com.castle.response.BfResponse;
 import com.castle.security.principal.PrincipalDetails;
@@ -74,7 +75,7 @@ public class ChatController {
     }
 
     @Operation(
-            summary = "채팅 세션 title 변경",
+            summary = "채팅 세션 update",
             description = "채팅 세션의 제목을 변경합니다."
     )
     @ApiResponses(value = {
@@ -84,8 +85,8 @@ public class ChatController {
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID")
     })
     @PatchMapping("/sessions")
-    public ResponseEntity<BfResponse<Void>> updateChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody ChatSessionsUpdateResponse chatSessionsUpdateResponse) {
-        chatService.updateChatSession(Long.parseLong(principalDetails.getUsername()));
+    public ResponseEntity<BfResponse<Void>> updateChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody ChatSessionUpdateResponse chatSessionUpdateResponse) {
+        chatService.updateChatSession(Long.parseLong(principalDetails.getUsername()), chatSessionUpdateResponse.getChatSessionId(), chatSessionUpdateResponse.getTitle());
         return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
     }
 
