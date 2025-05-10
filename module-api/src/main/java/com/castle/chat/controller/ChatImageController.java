@@ -1,5 +1,6 @@
 package com.castle.chat.controller;
 
+import com.castle.chat.dto.response.ImageUrlResponse;
 import com.castle.code.error.ChatErrorCode;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.error.S3ErrorCode;
