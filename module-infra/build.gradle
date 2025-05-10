@@ -26,6 +26,7 @@ dependencies {
     // S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+    implementation project(":module-common")
 }
 
 // 프로토콜 버퍼 컴파일러(protoc) 설정
