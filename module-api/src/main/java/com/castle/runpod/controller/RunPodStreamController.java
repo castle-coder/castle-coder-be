@@ -42,6 +42,10 @@ public class RunPodStreamController {
     @CrossOrigin(origins = "http://localhost:63342")
     @PostMapping(value = "/generate-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter generateCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
+        if (request.getImageUrl() != null) {
+            return runPodStreamService.streamToClient(request.getImageUrl(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
+        }
+        // gpt api로 이미지 변환 api 추가
         return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
     }
 
