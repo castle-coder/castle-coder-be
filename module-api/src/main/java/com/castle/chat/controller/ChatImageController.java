@@ -65,7 +65,7 @@ public class ChatImageController {
             @Parameter(description = "사진 URL입니다.", example = "https://.../ecc84...203.png")
             @RequestParam("imageUrl") String imageUrl
     ) {
-
+        imageUrlService.deleteImage(imageUrl, Long.parseLong(principalDetails.getUsername()));
         return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
     }
 }

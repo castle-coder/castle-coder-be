@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Objects;
 import java.util.UUID;
 
@@ -34,8 +33,34 @@ public class ImageUrlService {
     /**
      * S3에서 사진을 삭제합니다.
      */
-    public void deleteImage(String imageUrl) {
+    public void deleteImage(String imageUrl, Long memberId) {
+        String key = extractS3KeyFromUrl(imageUrl);
+
+        // 경로에 포함된 memberId와 일치하는지 검증
+        String expectedPrefix = "Chat/" + memberId + "/chatImage/";
+        if (!key.startsWith(expectedPrefix)) {
+            throw new IllegalArgumentException("해당 사용자의 이미지가 아닙니다.");
+        }
+
         s3ImageService.deleteImage(imageUrl);
+    }
+
+    /**
+     * https://버킷.도메인/Chat/{memberId}/chatImage/{shortUuid}.jpg
+     * 에서 "Chat/{memberId}/chatImage/{shortUuid}.jpg" 부분만 반환
+     */
+    private String extractS3KeyFromUrl(String imageUrl) {
+        // "//" 이후 첫 번째 '/' 위치 찾기
+        int start = imageUrl.indexOf("//");
+        if (start < 0) {
+            throw new S3Exception(S3ErrorCode.IMAGE_NOT_FOUND_ERROR);
+        }
+        // 도메인 이후 즉, "//domain.com/" 다음 '/'
+        int keyStart = imageUrl.indexOf('/', start + 2);
+        if (keyStart < 0 || keyStart + 1 >= imageUrl.length()) {
+            throw new S3Exception(S3ErrorCode.IMAGE_NOT_FOUND_ERROR);
+        }
+        return imageUrl.substring(keyStart + 1);
     }
 
     /**
