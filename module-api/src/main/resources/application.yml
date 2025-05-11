@@ -58,3 +58,7 @@ cloud:
     credentials:
       access-key: ${AWS_S3_ACCESS_KEY}
       secret-key: ${AWS_S3_SECRET_KEY}
+
+openai:
+  model: gpt-4o
+  secret-key: ${OPENAI_API_KEY}
