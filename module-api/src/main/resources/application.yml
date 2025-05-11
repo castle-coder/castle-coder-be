@@ -34,9 +34,27 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         show_sql: true
+  servlet:
+    multipart:
+      max-file-size: 10MB # multipart/form-data 요청의 최대 허용 크기. 기본 1MB
+      max-request-size: 10MB # multipart/form-data 요청의 최대 허용 크기. 기본 10MB
+
 
 
 jwt:
   secret: ${JWT_SECRET_KEY} # JWT 서명을 위한 시크릿 키
   access-expiration-seconds: ${ACCESS_EXPIRATION_SECONDS} # access token 만료 시간
   refresh-expiration-seconds: ${REFRESH_EXPIRATION_SECONDS} # refresh token 만료 시간
+
+# AWS S3
+cloud:
+  aws:
+    s3:
+      bucket: castle-coder-s3-bucket   # 버킷 이름
+    region:
+      static: ap-northeast-2  # 버킷의 리전
+    stack:
+      auto: false
+    credentials:
+      access-key: ${AWS_S3_ACCESS_KEY}
+      secret-key: ${AWS_S3_SECRET_KEY}

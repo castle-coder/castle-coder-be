@@ -147,6 +147,8 @@ public class SecurityConfig {
                 antMatcher(PATCH, "/chat/session"), // 채팅 세션 UPDATE
                 antMatcher(GET, "/chat/logs"), // 채팅 로그 READ
 
+                antMatcher(POST, "/chat/image"), // S3 Bucket에 채팅에 입력된 사진 업로드
+                antMatcher(DELETE, "/chat/image"), // S3 Bucket에 채팅에 입력된 사진 삭제
 
                 antMatcher(GET, "/member/profiles"), // 회원 프로필 조회
                 antMatcher(DELETE, "/member/withdraw") // 회원 탈퇴
