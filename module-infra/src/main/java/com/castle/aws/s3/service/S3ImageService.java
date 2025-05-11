@@ -69,9 +69,15 @@ public class S3ImageService {
      * 디코딩된 파일 이름 반환
      */
     private String getDecodedFileName(String imageUrl) {
-        String encodedFileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-        String fileName = URLDecoder.decode(encodedFileName, StandardCharsets.UTF_8);
+        try {
+            // "https://bucket.s3.amazonaws.com/Chat/123/chatImage/abcd.png"
+            // → "/Chat/123/chatImage/abcd.png"
+            String path = new java.net.URI(imageUrl).getPath();
 
-        return fileName;
+            // 앞의 '/' 제거하고 디코딩
+            return URLDecoder.decode(path.substring(1), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new S3Exception(S3ErrorCode.IMAGE_NOT_FOUND_ERROR);
+        }
     }
 }

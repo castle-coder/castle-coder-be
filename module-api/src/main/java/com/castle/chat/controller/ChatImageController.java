@@ -2,14 +2,9 @@ package com.castle.chat.controller;
 
 import com.castle.aws.s3.service.ImageUrlService;
 import com.castle.chat.dto.response.ImageUrlResponse;
-import com.castle.code.error.ChatErrorCode;
-import com.castle.code.error.MemberErrorCode;
 import com.castle.code.error.S3ErrorCode;
 import com.castle.code.success.GlobalSuccessCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
-import com.castle.documentation.annotation.ApiErrorCodeExamples;
-import com.castle.domain.chat.dto.request.ChatLogsReadResponse;
-import com.castle.domain.chat.service.ChatService;
 import com.castle.response.BfResponse;
 import com.castle.security.principal.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,12 +35,13 @@ public class ChatImageController {
             @ApiResponse(responseCode = "200", description = "S3 사진 업로드 성공", useReturnTypeSchema = true),
     })
     @ApiErrorCodeExample(errorClass = S3ErrorCode.class, field = "INVALID_IMAGE_EXTENSION")
-    @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BfResponse<ImageUrlResponse>> uploadChatImage(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @Parameter(description = "채팅에 입력된 사진입니다.")
             @RequestPart("updateImage") MultipartFile updateImage
     ) {
+        System.out.println("updateImage = " + updateImage);
         ImageUrlResponse imageUrl = ImageUrlResponse.builder()
                 .imageUrl(imageUrlService.uploadImage(updateImage, Long.parseLong(principalDetails.getUsername())))
                 .build();
@@ -59,7 +55,7 @@ public class ChatImageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "S3 사진 삭제 성공", useReturnTypeSchema = true),
     })
-    @DeleteMapping(value = "/")
+    @DeleteMapping(value = "")
     public ResponseEntity<BfResponse<Void>> deleteChatImage(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @Parameter(description = "사진 URL입니다.", example = "https://.../ecc84...203.png")
