@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ChatLog 엔티티 클래스입니다.
@@ -40,6 +42,9 @@ public class ChatLog {
 
     @Column(name = "create_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "chatLog", cascade = CascadeType.ALL)
+    private List<ChatImage> images = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
