@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class RunPodStreamController {
 
     private final RunPodStreamService runPodStreamService;
+    private final OpenAiService openAiService;
 
     /**
      * 프론트엔드에서 prompt 파라미터를 받아 SSE 스트림으로 응답 전송
@@ -42,6 +43,7 @@ public class RunPodStreamController {
     @PostMapping(value = "/generate-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter generateCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
         if (request.getImageUrls() != null) {
+            String imagePrompt = openAiService.generateImagePrompt(request.getImageUrls());
             return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
         }
         // gpt api로 이미지 변환 api 추가

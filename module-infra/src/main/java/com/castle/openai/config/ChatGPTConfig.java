@@ -11,8 +11,8 @@ public class ChatGPTConfig {
     @Value("${openai.api.key}")
     private String secretKey;
 
-    @Bean(name = "GPTRestTemplate")
-    public RestTemplate gptRestTemplate() {
+    @Bean
+    public RestTemplate template() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add(((request, body, execution) -> {
             request.getHeaders().add("Authorization", "Bearer " + secretKey);
