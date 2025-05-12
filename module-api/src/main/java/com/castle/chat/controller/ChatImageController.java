@@ -41,7 +41,6 @@ public class ChatImageController {
             @Parameter(description = "채팅에 입력된 사진입니다.")
             @RequestPart("updateImage") MultipartFile updateImage
     ) {
-        System.out.println("updateImage = " + updateImage);
         ImageUrlResponse imageUrl = ImageUrlResponse.builder()
                 .imageUrl(imageUrlService.uploadImage(updateImage, Long.parseLong(principalDetails.getUsername())))
                 .build();

@@ -21,6 +21,7 @@ public class ImageUrlService {
     @Transactional
     public String uploadImage(MultipartFile uploadImage, Long memberId) {
         String uuid = UUID.randomUUID().toString().replace("-", ""); // 하이픈 제거
+
         String shortUuid = uuid.substring(0, 8); // 앞 8자리만 사용
         String fileName = "Chat/" + memberId + "/chatImage/" + shortUuid;
         // 파일 확장자 검사

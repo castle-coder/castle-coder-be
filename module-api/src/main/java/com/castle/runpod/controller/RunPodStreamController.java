@@ -3,6 +3,7 @@ package com.castle.runpod.controller;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
 import com.castle.documentation.annotation.ApiErrorCodeExamples;
+import com.castle.openai.service.OpenAiService;
 import com.castle.runpod.dto.request.CodeGenerateRequest;
 import com.castle.runpod.service.RunPodStreamService;
 import com.castle.security.principal.PrincipalDetails;
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class RunPodStreamController {
 
     private final RunPodStreamService runPodStreamService;
+    private final OpenAiService openAiService;
 
     /**
      * 프론트엔드에서 prompt 파라미터를 받아 SSE 스트림으로 응답 전송
@@ -41,11 +43,16 @@ public class RunPodStreamController {
     })
     @PostMapping(value = "/generate-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter generateCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
-        if (request.getImageUrl() != null) {
-            return runPodStreamService.streamToClient(request.getImageUrl(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
+        System.out.println(request.getImageUrls());
+        if (request.getImageUrls() != null) {
+            String imagePrompt = openAiService.generateImagePrompt(request.getImageUrls());
+            return runPodStreamService.streamToClient(
+                    imagePrompt + "\n" + request.getPrompt(),
+                    Long.parseLong(principalDetails.getUsername()),
+                    request.getChatSessionId(), request.getImageUrls());
         }
         // gpt api로 이미지 변환 api 추가
-        return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
+        return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId(), null);
     }
 
     /**
@@ -65,6 +72,6 @@ public class RunPodStreamController {
     @CrossOrigin(origins = "http://localhost:63342")
     @PostMapping(value = "/refactor-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter refactorCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
-        return runPodStreamService.streamToClient(request.appendInstruction(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
+        return runPodStreamService.streamToClient(request.appendInstruction(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId(), null);
     }
 }
