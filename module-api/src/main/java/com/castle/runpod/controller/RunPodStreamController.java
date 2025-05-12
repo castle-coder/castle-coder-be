@@ -49,10 +49,10 @@ public class RunPodStreamController {
             return runPodStreamService.streamToClient(
                     imagePrompt + "\n" + request.getPrompt(),
                     Long.parseLong(principalDetails.getUsername()),
-                    request.getChatSessionId());
+                    request.getChatSessionId(), request.getImageUrls());
         }
         // gpt api로 이미지 변환 api 추가
-        return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
+        return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId(), null);
     }
 
     /**
@@ -72,6 +72,6 @@ public class RunPodStreamController {
     @CrossOrigin(origins = "http://localhost:63342")
     @PostMapping(value = "/refactor-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter refactorCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
-        return runPodStreamService.streamToClient(request.appendInstruction(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
+        return runPodStreamService.streamToClient(request.appendInstruction(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId(), null);
     }
 }

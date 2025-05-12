@@ -3,8 +3,10 @@ package com.castle.runpod.service;
 import com.castle.code.error.ChatErrorCode;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.error.RunPodErrorCode;
+import com.castle.domain.chat.entity.ChatImage;
 import com.castle.domain.chat.entity.ChatLog;
 import com.castle.domain.chat.entity.ChatSession;
+import com.castle.domain.chat.repository.ChatImageRepository;
 import com.castle.domain.chat.repository.ChatLogRepository;
 import com.castle.domain.chat.repository.ChatSessionRepository;
 import com.castle.exception.ChatException;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -31,12 +34,13 @@ public class RunPodStreamService {
     private final RunPodGrpcClient runPodGrpcClient;
     private final ChatLogRepository chatLogRepository;
     private final ChatSessionRepository chatSessionRepository;
+    private final ChatImageRepository chatImageRepository;
 
     /**
      * 프론트엔드에 SSE를 통해 스트리밍 전송한다.
      */
     @Transactional
-    public SseEmitter streamToClient(String prompt, Long memberId, Long chatSessionId) {
+    public SseEmitter streamToClient(String prompt, Long memberId, Long chatSessionId, List<String> imageUrls) {
         ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));
 
@@ -87,7 +91,7 @@ public class RunPodStreamService {
                                 }
 
                                 // 여기서 다시 chatSession과 member 조회 (새 트랜잭션)
-                                saveChatLog(finalChatSessionId, memberId, prompt, responseBuilder.toString());
+                                saveChatLog(finalChatSessionId, memberId, prompt, responseBuilder.toString(), imageUrls);
                                 emitter.complete();
                                 System.out.println(1);
                             }
@@ -122,16 +126,28 @@ public class RunPodStreamService {
     }
 
     @Transactional
-    protected void saveChatLog(Long chatSessionId, Long memberId, String prompt, String response) {
+    protected void saveChatLog(Long chatSessionId, Long memberId, String prompt, String response, List<String> imageUrls) {
         ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
                 .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));
 
-        chatLogRepository.save(ChatLog.builder()
+        ChatLog chatLog = ChatLog.builder()
                 .chatSession(chatSession)
                 .member(chatSession.getMember()) // 같은 트랜잭션이므로 안전
                 .prompt(prompt)
                 .response(response)
-                .build());
-    }
+                .build();
 
+        chatLogRepository.save(chatLog);
+
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            for (String imageUrl : imageUrls) {
+                chatImageRepository.save(
+                        ChatImage.builder()
+                                .chatLog(chatLog)
+                                .imageUrl(imageUrl)
+                                .build()
+                );
+            }
+        }
+    }
 }
