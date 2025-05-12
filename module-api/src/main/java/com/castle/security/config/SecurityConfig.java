@@ -73,7 +73,7 @@ public class SecurityConfig {
         config.addAllowedOriginPattern("*"); // 또는 정확한 origin (예: "vscode-webview://*")
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        config.setAllowCredentials(true); // 필요 시
+        config.setAllowCredentials(false); // 필요 시
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

@@ -1,18 +1,16 @@
 package com.castle.security.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class WebClientConfig {
-
-    private final String contentType = "application/x-www-form-urlencoded;charset=utf-8";
-    @Bean
-    public WebClient webClient() {
-        return WebClient.builder()
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, contentType)
-                .build();
+public class WebClientConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOriginPatterns("*") // “*“같은 와일드카드를 사용
+                .allowedMethods("GET", "POST","PATCH","DELETE") // 허용할 HTTP method
+                .allowCredentials(false); // 쿠키 인증 요청 허용
     }
 }
