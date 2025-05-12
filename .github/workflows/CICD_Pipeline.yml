@@ -128,6 +128,12 @@ jobs:
               echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> .env
             fi
             
+            if grep -q "^OPENAI_API_KEY=" .env; then
+              sed -i "s/^OPENAI_API_KEY=.*/OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}/" .env
+            else
+              echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+            fi
+            
             docker stop castle-coder-be || true
             docker rm castle-coder-be || true
 
