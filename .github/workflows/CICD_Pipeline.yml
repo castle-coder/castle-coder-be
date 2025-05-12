@@ -116,6 +116,18 @@ jobs:
               echo "REFRESH_EXPIRATION_SECONDS=${{ secrets.REFRESH_EXPIRATION_SECONDS }}" >> .env
             fi
             
+            if grep -q "^AWS_S3_ACCESS_KEY=" .env; then
+              sed -i "s/^AWS_S3_ACCESS_KEY=.*/AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}/" .env
+            else
+              echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> .env
+            fi
+            
+            if grep -q "^AWS_S3_SECRET_KEY=" .env; then
+              sed -i "s/^AWS_S3_SECRET_KEY=.*/AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}/" .env
+            else
+              echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> .env
+            fi
+            
             docker stop castle-coder-be || true
             docker rm castle-coder-be || true
 
