@@ -31,6 +31,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.*;
@@ -66,20 +67,26 @@ public class SecurityConfig {
         return new CustomAuthenticationProvider(principalDetailsService, passwordEncoder());
     }
 
-
+    /**
+     * CORS 설정
+     * vscode-webview://* : VSCode WebView에서 요청을 보낼 수 있도록 허용
+     * 모든 헤더, 메서드 허용
+     * 인증 쿠키 포함 허용
+     * preflight 캐시 1시간
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOriginPattern("*"); // 또는 정확한 origin (예: "vscode-webview://*")
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.setAllowCredentials(false); // 필요 시
+        config.setAllowedOriginPatterns(Arrays.asList("vscode-webview://*", "http://localhost:63342", "http://localhost:3000")); // 보안상 추천
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowCredentials(true); // 인증 쿠키 포함 허용
+        config.setMaxAge(3600L); // preflight 캐시
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
 
     /**
      * CustomUsernamePasswordAuthenticationFilter 빈 등록
