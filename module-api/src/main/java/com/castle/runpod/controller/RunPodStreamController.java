@@ -3,6 +3,7 @@ package com.castle.runpod.controller;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
 import com.castle.documentation.annotation.ApiErrorCodeExamples;
+import com.castle.openai.service.OpenAiService;
 import com.castle.runpod.dto.request.CodeGenerateRequest;
 import com.castle.runpod.service.RunPodStreamService;
 import com.castle.security.principal.PrincipalDetails;
