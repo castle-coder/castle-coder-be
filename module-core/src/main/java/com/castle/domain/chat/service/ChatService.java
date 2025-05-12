@@ -6,6 +6,7 @@ import com.castle.domain.chat.dto.request.ChatLogsReadResponse;
 import com.castle.domain.chat.dto.request.ChatSessionsReadResponse;
 import com.castle.domain.chat.entity.ChatLog;
 import com.castle.domain.chat.entity.ChatSession;
+import com.castle.domain.chat.repository.ChatImageRepository;
 import com.castle.domain.chat.repository.ChatSessionRepository;
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.repository.MemberRepository;
