@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +27,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -61,6 +65,21 @@ public class SecurityConfig {
     public CustomAuthenticationProvider customAuthenticationProvider() {
         return new CustomAuthenticationProvider(principalDetailsService, passwordEncoder());
     }
+
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOriginPattern("*"); // 또는 정확한 origin (예: "vscode-webview://*")
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.setAllowCredentials(true); // 필요 시
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
 
     /**
      * CustomUsernamePasswordAuthenticationFilter 빈 등록
@@ -184,7 +203,7 @@ public class SecurityConfig {
         http
                 // JWT, OAuth 기반
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
-                .cors(AbstractHttpConfigurer::disable) // CORS 설정 비활성화 (React Native)
+                .cors(Customizer.withDefaults()) // CORS 설정
                 .formLogin(AbstractHttpConfigurer::disable) // Form 기반 로그인 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
                 .rememberMe(AbstractHttpConfigurer::disable) // 세션 기반의 인증 비활성화

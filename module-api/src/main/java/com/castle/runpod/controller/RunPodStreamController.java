@@ -39,7 +39,6 @@ public class RunPodStreamController {
     @ApiErrorCodeExamples({
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_CHAT_SESSION_ACCESS"),
     })
-    @CrossOrigin(origins = "http://localhost:63342")
     @PostMapping(value = "/generate-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter generateCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
         if (request.getImageUrl() != null) {
