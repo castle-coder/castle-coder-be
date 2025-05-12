@@ -60,5 +60,6 @@ cloud:
       secret-key: ${AWS_S3_SECRET_KEY}
 
 openai:
-  model: gpt-4o
-  secret-key: ${OPENAI_API_KEY}
+  model: gpt-4.1-mini
+  api:
+    key: ${OPENAI_API_KEY}

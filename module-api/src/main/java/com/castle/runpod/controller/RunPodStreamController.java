@@ -43,9 +43,13 @@ public class RunPodStreamController {
     })
     @PostMapping(value = "/generate-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter generateCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
+        System.out.println(request.getImageUrls());
         if (request.getImageUrls() != null) {
             String imagePrompt = openAiService.generateImagePrompt(request.getImageUrls());
-            return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
+            return runPodStreamService.streamToClient(
+                    imagePrompt + "\n" + request.getPrompt(),
+                    Long.parseLong(principalDetails.getUsername()),
+                    request.getChatSessionId());
         }
         // gpt api로 이미지 변환 api 추가
         return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId());
