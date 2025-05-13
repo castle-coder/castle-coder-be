@@ -77,7 +77,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(Arrays.asList("vscode-webview://1ufglie5d8g7e7ckq6nhdnet0cp6eve1jgit3thsruaqk3jbl0uc", "http://localhost:63342", "http://localhost:3000")); // 보안상 추천
+        config.setAllowedOriginPatterns(Arrays.asList(
+                "vscode-webview://1ufglie5d8g7e7ckq6nhdnet0cp6eve1jgit3thsruaqk3jbl0uc",
+                "http://localhost:63342",
+                "http://localhost:3000"
+        )); // 보안상 추천
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowCredentials(true); // 인증 쿠키 포함 허용
@@ -218,8 +222,12 @@ public class SecurityConfig {
                 .anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 접근 비할성화
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 생성하지 않음
-                .headers(headers -> headers.frameOptions(
-                        HeadersConfigurer.FrameOptionsConfig::disable) // X-Frame-Options 헤더 비활성화, 클릭재킹 공격 방지
+                .headers(headers -> headers
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable) // X-Frame-Options 헤더 비활성화
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src 'self' vscode-webview://* http://13.125.85.38:8080")
+
+                        ) // CSP 정책 추가
                 );
     }
 }
