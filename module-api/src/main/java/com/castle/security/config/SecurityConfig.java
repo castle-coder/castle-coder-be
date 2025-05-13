@@ -77,7 +77,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(Arrays.asList("vscode-webview://*", "http://localhost:63342", "http://localhost:3000")); // 보안상 추천
+        config.setAllowedOriginPatterns(Arrays.asList("vscode-webview://1ufglie5d8g7e7ckq6nhdnet0cp6eve1jgit3thsruaqk3jbl0uc", "http://localhost:63342", "http://localhost:3000")); // 보안상 추천
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowCredentials(true); // 인증 쿠키 포함 허용
