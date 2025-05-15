@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,6 +30,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -78,13 +80,14 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(Arrays.asList(
+                "http://127.0.0.1:5500",
                 "vscode-webview://1ufglie5d8g7e7ckq6nhdnet0cp6eve1jgit3thsruaqk3jbl0uc",
                 "http://localhost:63342",
                 "http://localhost:3000"
         )); // 보안상 추천
-        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowCredentials(true); // 인증 쿠키 포함 허용
+        config.setAllowCredentials(true);
         config.setMaxAge(3600L); // preflight 캐시
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -133,6 +136,7 @@ public class SecurityConfig {
                 .securityMatchers(matcher -> matcher
                         .requestMatchers(authenticatedRequestMatchers()))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(authenticatedRequestMatchers())
                         .hasAnyAuthority("ROLE_USER") // role 추가 예정
                         .anyRequest().authenticated())
@@ -157,6 +161,7 @@ public class SecurityConfig {
                 .securityMatchers(matcher -> matcher
                         .requestMatchers(publicRequestMatchers()))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(publicRequestMatchers()).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(authenticationFilter, ExceptionTranslationFilter.class);;
@@ -214,7 +219,7 @@ public class SecurityConfig {
         http
                 // JWT, OAuth 기반
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
-                .cors(Customizer.withDefaults()) // CORS 설정
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
                 .formLogin(AbstractHttpConfigurer::disable) // Form 기반 로그인 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
                 .rememberMe(AbstractHttpConfigurer::disable) // 세션 기반의 인증 비활성화
@@ -225,8 +230,7 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable) // X-Frame-Options 헤더 비활성화
                         .contentSecurityPolicy(csp -> csp
-                                .policyDirectives("default-src 'self' vscode-webview://* http://13.125.85.38:8080")
-
+                                .policyDirectives("default-src 'self' vscode-webview://* http://13.125.85.38")
                         ) // CSP 정책 추가
                 );
     }
