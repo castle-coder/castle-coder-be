@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -70,32 +69,6 @@ public class SecurityConfig {
     }
 
     /**
-     * CORS 설정
-     * vscode-webview://* : VSCode WebView에서 요청을 보낼 수 있도록 허용
-     * 모든 헤더, 메서드 허용
-     * 인증 쿠키 포함 허용
-     * preflight 캐시 1시간
-     */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(Arrays.asList(
-                "http://127.0.0.1:5500",
-                "vscode-webview://1ufglie5d8g7e7ckq6nhdnet0cp6eve1jgit3thsruaqk3jbl0uc",
-                "http://localhost:63342",
-                "http://localhost:3000"
-        )); // 보안상 추천
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowCredentials(true);
-        config.setMaxAge(3600L); // preflight 캐시
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
-
-    /**
      * CustomUsernamePasswordAuthenticationFilter 빈 등록
      * 커스텀 필터를 사용하기 위해 만든 커스텀 필터를 Bean으로 등록
      * setAuthenticationManager(authenticationManager())로 위에서 등록한 AuthenticationManager(ProviderManager) 설정
@@ -136,7 +109,6 @@ public class SecurityConfig {
                 .securityMatchers(matcher -> matcher
                         .requestMatchers(authenticatedRequestMatchers()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(authenticatedRequestMatchers())
                         .hasAnyAuthority("ROLE_USER") // role 추가 예정
                         .anyRequest().authenticated())
@@ -161,7 +133,6 @@ public class SecurityConfig {
                 .securityMatchers(matcher -> matcher
                         .requestMatchers(publicRequestMatchers()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(publicRequestMatchers()).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(authenticationFilter, ExceptionTranslationFilter.class);;
@@ -173,6 +144,7 @@ public class SecurityConfig {
      */
     private RequestMatcher[] authenticatedRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
+                antMatcher(OPTIONS, "/**"),
                 antMatcher(POST, "/llm/generate-code"), // ai 모델 코드 생성 요청
                 antMatcher(POST, "/llm/refactor-code"), // ai 모델 코드 리팩토링 요청
 
@@ -198,6 +170,7 @@ public class SecurityConfig {
      */
     private RequestMatcher[] publicRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
+                antMatcher(OPTIONS, "/**"),
                 // swagger
                 antMatcher(GET, "/swagger-ui/**"), // Swagger UI 웹 인터페이스를 제공하는 경로
                 antMatcher(GET, "/v3/api-docs/**"), // Swagger의 API 문서 데이터를 JSON 형식으로 제공하는 경로
@@ -205,12 +178,30 @@ public class SecurityConfig {
                 antMatcher(GET, "/utils/health"), // 헬스 체크
 
                 antMatcher(POST, "/auth/login"), // 로그인
+
                 antMatcher(POST, "/member/sign-up"), // 회원가입
                 antMatcher(GET, "/member/check-email") // 이메일 중복확인
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);
     }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        // 필요한 Origin 을 등록 ( * 로 두면 모든 Origin 허용 )
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://your-front.com"));
+        // pre-flight 를 포함한 모든 메서드 허용
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));        // 모든 요청 헤더 허용
+        config.setExposedHeaders(List.of("Authorization")); // 응답에서 노출할 헤더
+        config.setAllowCredentials(true);              // 쿠키/Authorization 헤더 허용
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
 
     /**
      * Spring Security 기본 설정 메서드
@@ -219,7 +210,7 @@ public class SecurityConfig {
         http
                 // JWT, OAuth 기반
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable) // Form 기반 로그인 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
                 .rememberMe(AbstractHttpConfigurer::disable) // 세션 기반의 인증 비활성화
@@ -227,6 +218,8 @@ public class SecurityConfig {
                 .anonymous(AbstractHttpConfigurer::disable) // 익명 사용자 접근 비할성화
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 생성하지 않음
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(OPTIONS, "/**").permitAll() )  // ✅
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable) // X-Frame-Options 헤더 비활성화
                         .contentSecurityPolicy(csp -> csp
