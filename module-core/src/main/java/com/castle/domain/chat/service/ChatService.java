@@ -57,14 +57,16 @@ public class ChatService {
     }
 
     @Transactional
-    public void appendChatSession(Long memberId) {
+    public Long appendChatSession(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER_ID));
 
-        chatSessionRepository.save(ChatSession.builder()
+        ChatSession chatSession = ChatSession.builder()
                 .member(member)
                 .createdAt(LocalDateTime.now())
-                .build());
+                .build();
+        chatSessionRepository.save(chatSession);
+        return chatSession.getId();
     }
 
     @Transactional

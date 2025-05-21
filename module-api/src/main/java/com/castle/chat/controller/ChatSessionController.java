@@ -1,5 +1,6 @@
 package com.castle.chat.controller;
 
+import com.castle.chat.dto.response.AddChatSessionResponse;
 import com.castle.code.error.ChatErrorCode;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.code.success.GlobalSuccessCode;
@@ -52,9 +53,10 @@ public class ChatSessionController {
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_MEMBER_ID")
     })
     @PostMapping("")
-    public ResponseEntity<BfResponse<Void>> appendChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-        chatService.appendChatSession(Long.parseLong(principalDetails.getUsername()));
-        return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
+    public ResponseEntity<BfResponse<AddChatSessionResponse>> appendChatSession(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        return ResponseEntity.ok(new BfResponse<>(AddChatSessionResponse.builder()
+                .chatSessionId(chatService.appendChatSession(Long.parseLong(principalDetails.getUsername())))
+                .build()));
     }
 
     @Operation(

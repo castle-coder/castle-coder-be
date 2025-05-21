@@ -10,7 +10,6 @@ import com.castle.security.principal.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -67,7 +66,6 @@ public class RunPodStreamController {
     @ApiErrorCodeExamples({
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_CHAT_SESSION_ACCESS"),
     })
-    @CrossOrigin(origins = "http://localhost:63342")
     @PostMapping(value = "/refactor-code", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter refactorCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
         return runPodStreamService.streamToClient(request.appendInstruction(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId(), null);
