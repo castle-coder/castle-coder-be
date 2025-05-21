@@ -4,15 +4,18 @@ import com.castle.code.error.ChatErrorCode;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.domain.chat.dto.request.ChatLogsReadResponse;
 import com.castle.domain.chat.dto.request.ChatSessionsReadResponse;
+import com.castle.domain.chat.entity.ChatImage;
 import com.castle.domain.chat.entity.ChatLog;
 import com.castle.domain.chat.entity.ChatSession;
 import com.castle.domain.chat.repository.ChatImageRepository;
+import com.castle.domain.chat.repository.ChatLogRepository;
 import com.castle.domain.chat.repository.ChatSessionRepository;
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.repository.MemberRepository;
 import com.castle.exception.ChatException;
 import com.castle.exception.MemberException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +24,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
     private final ChatSessionRepository chatSessionRepository;
     private final MemberRepository memberRepository;
+    private final ChatLogRepository chatLogRepository;
+    private final ChatImageRepository chatImageRepository;
 
     @Transactional(readOnly = true)
     public List<ChatSessionsReadResponse> getChatSessions(Long memberId) {
@@ -84,5 +90,38 @@ public class ChatService {
         }
 
         chatSessionRepository.delete(chatSession);
+    }
+
+
+    @Transactional
+    public void saveChatLog(Long chatSessionId,
+                               String prompt,
+                               String response,
+                               List<String> imageUrls) {
+        try {
+            ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
+                    .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));
+
+            ChatLog chatLog = ChatLog.builder()
+                    .chatSession(chatSession)
+                    .member(chatSession.getMember())
+                    .prompt(prompt)
+                    .response(response)
+                    .build();
+
+            chatLogRepository.save(chatLog);
+
+            if (imageUrls != null && !imageUrls.isEmpty()) {
+                imageUrls.forEach(url -> chatImageRepository.save(
+                        ChatImage.builder()
+                                .chatLog(chatLog)
+                                .imageUrl(url)
+                                .build()
+                ));
+            }
+        } catch (Exception e) {
+            log.error("채팅 로그 저장 중 오류 발생", e);
+            throw new ChatException(ChatErrorCode.CHAT_LOG_SAVE_FAILED);
+        }
     }
 }

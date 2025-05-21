@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ChatErrorCode implements BaseErrorCode {
     // 404 NOT_FOUND
-    NOT_FOUND_CHAT_SESSION(404, "존재하지 않는 채팅 세션입니다.", HttpStatus.NOT_FOUND);
+    NOT_FOUND_CHAT_SESSION(404, "존재하지 않는 채팅 세션입니다.", HttpStatus.NOT_FOUND),
+    CHAT_LOG_SAVE_FAILED(404, "채팅 로그 저장에 실패했습니다.", HttpStatus.NOT_FOUND),;
 
     private final int errorCode;
     private final String errorMessage;
