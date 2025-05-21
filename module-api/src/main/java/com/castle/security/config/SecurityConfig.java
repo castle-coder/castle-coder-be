@@ -13,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutor;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,10 +32,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.*;
@@ -145,21 +145,21 @@ public class SecurityConfig {
     private RequestMatcher[] authenticatedRequestMatchers() {
         List<RequestMatcher> requestMatchers = List.of(
                 antMatcher(OPTIONS, "/**"),
-                antMatcher(POST, "/llm/generate-code"), // ai 모델 코드 생성 요청
-                antMatcher(POST, "/llm/refactor-code"), // ai 모델 코드 리팩토링 요청
-
                 antMatcher(POST, "/chat/session"), // 채팅 세션 추가
                 antMatcher(GET, "/chat/session"), // 채팅 세션 READ
                 antMatcher(DELETE, "/chat/session"), // 채팅 세션 DELETE
                 antMatcher(PATCH, "/chat/session"), // 채팅 세션 UPDATE
                 antMatcher(GET, "/chat/logs"), // 채팅 로그 READ
 
+                // SSE 엔드포인트
+                antMatcher(POST, "/llm/generate-code"), // ai 모델 코드 생성 요청
+                antMatcher(POST, "/llm/refactor-code"), // ai 모델 코드 리팩토링 요청
+
                 antMatcher(POST, "/chat/image"), // S3 Bucket에 채팅에 입력된 사진 업로드
                 antMatcher(DELETE, "/chat/image"), // S3 Bucket에 채팅에 입력된 사진 삭제
 
                 antMatcher(GET, "/member/profiles"), // 회원 프로필 조회
                 antMatcher(DELETE, "/member/withdraw") // 회원 탈퇴
-
         );
 
         return requestMatchers.toArray(RequestMatcher[]::new);
@@ -225,6 +225,9 @@ public class SecurityConfig {
                         .contentSecurityPolicy(csp -> csp
                                 .policyDirectives("default-src 'self' vscode-webview://* http://13.125.85.38")
                         ) // CSP 정책 추가
-                );
+                )
+                // 비동기 요청에서 SecurityContext 전파 설정
+                .securityContext(securityContext -> securityContext
+                        .requireExplicitSave(false));
     }
 }

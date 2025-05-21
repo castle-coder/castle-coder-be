@@ -34,7 +34,6 @@ public class RunPodStreamController {
             summary = "ai 모델 코드 생성 요청",
             description = "ai 모델 코드 생성 요청합니다."
     )
-    @SecurityRequirements(value = {})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "코드 생성 성공", useReturnTypeSchema = true),
     })
@@ -62,7 +61,6 @@ public class RunPodStreamController {
             summary = "ai 모델 코드 보안 리팩토링 요청",
             description = "ai 모델 코드 보안 리팩토링 요청합니다."
     )
-    @SecurityRequirements(value = {})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "코드 생성 성공", useReturnTypeSchema = true),
     })

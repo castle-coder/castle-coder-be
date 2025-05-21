@@ -7,6 +7,8 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -47,7 +49,8 @@ public class RunPodGrpcClient {
     public void streamFromGrpc(String grpcTarget, String prompt,
                                Consumer<String> onToken,
                                Runnable onComplete,
-                               Consumer<Throwable> onError) {
+                               Consumer<Throwable> onError,
+                               SecurityContext context) {
         ManagedChannel channel = ManagedChannelBuilder.forTarget(grpcTarget)
                 .usePlaintext()
                 .build();
@@ -63,6 +66,8 @@ public class RunPodGrpcClient {
             @Override
             public void onNext(HandleResponse response) {
                 try {
+                    SecurityContextHolder.setContext(context);
+                    System.out.println("run" +SecurityContextHolder.getContext().getAuthentication());
                     handleResponse(response, onToken, onComplete);
                 } catch (Exception ex) {
                     onError.accept(ex);
@@ -71,12 +76,16 @@ public class RunPodGrpcClient {
 
             @Override
             public void onError(Throwable t) {
+                SecurityContextHolder.setContext(context);
+                System.out.println("error" +SecurityContextHolder.getContext().getAuthentication());
                 onError.accept(t);
                 channel.shutdown();
             }
 
             @Override
             public void onCompleted() {
+                SecurityContextHolder.setContext(context);
+                System.out.println("comple" + SecurityContextHolder.getContext().getAuthentication());
                 onComplete.run();
                 channel.shutdown();
             }
