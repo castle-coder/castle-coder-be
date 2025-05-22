@@ -7,31 +7,44 @@ def protobufVersion = '3.25.3'
 def protocVersion = protobufVersion
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    testImplementation 'io.projectreactor:reactor-test'
+    // ==========================================
+    // Spring Boot 기본 의존성
+    // ==========================================
+    implementation 'org.springframework.boot:spring-boot-starter-web'        // Spring MVC
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'    // Reactive Web
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'   // JPA
+    implementation 'org.springframework.boot:spring-boot-starter-security'   // Spring Security
 
+    // ==========================================
+    // gRPC 관련 의존성
+    // ==========================================
+    // 프로토콜 버퍼
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"   // Protocol Buffers
 
-    // grpc 프로토콜 버퍼
-    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+    // gRPC 서버/클라이언트
+    implementation 'net.devh:grpc-client-spring-boot-starter:3.1.0.RELEASE'  // gRPC 클라이언트
+    implementation 'net.devh:grpc-spring-boot-starter:3.1.0.RELEASE'         // gRPC 서버
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"               // gRPC Netty
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"                   // gRPC Protocol Buffers
+    implementation "io.grpc:grpc-stub:${grpcVersion}"                       // gRPC Stub
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'                  // Tomcat Annotations
 
-    // grpc 서버, 클라이언트 설정
-    implementation 'net.devh:grpc-client-spring-boot-starter:3.1.0.RELEASE'
-    implementation 'net.devh:grpc-spring-boot-starter:3.1.0.RELEASE'
-    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
-    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
-    implementation "io.grpc:grpc-stub:${grpcVersion}"
-    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+    // ==========================================
+    // AWS S3 관련 의존성
+    // ==========================================
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'  // AWS S3
 
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.springframework.security:spring-security-test'
+    // ==========================================
+    // 프로젝트 내부 모듈 의존성
+    // ==========================================
+    implementation project(":module-common")  // 공통 모듈
+    implementation project(":module-core")    // 코어 모듈
 
-    // S3
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-
-    implementation project(":module-common")
-    implementation project(":module-core")
+    // ==========================================
+    // 테스트 관련 의존성
+    // ==========================================
+    testImplementation 'io.projectreactor:reactor-test'                     // Reactive 테스트
+    testImplementation 'org.springframework.security:spring-security-test'  // Security 테스트
 }
 
 // 프로토콜 버퍼 컴파일러(protoc) 설정
