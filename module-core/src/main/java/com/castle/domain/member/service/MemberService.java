@@ -1,10 +1,12 @@
 package com.castle.domain.member.service;
 
+import com.castle.code.error.ChatErrorCode;
 import com.castle.code.error.MemberErrorCode;
 import com.castle.domain.chat.entity.ChatSession;
 import com.castle.domain.chat.repository.ChatSessionRepository;
 import com.castle.domain.member.entity.Member;
 import com.castle.domain.member.repository.MemberRepository;
+import com.castle.exception.ChatException;
 import com.castle.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -71,6 +73,15 @@ public class MemberService {
     public void isEmailDuplicate(String email) {
         if (memberRepository.findByEmail(email).isPresent()) {
             throw new MemberException(MemberErrorCode.EXIST_MEMBER_EMAIL);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public void validateChatSessionAccess(Long memberId, Long chatSessionId) {
+        ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));
+        if (!chatSession.getMember().getId().equals(memberId)) {
+            throw new MemberException(MemberErrorCode.FORBIDDEN_CHAT_SESSION_ACCESS);
         }
     }
 

@@ -4,7 +4,7 @@ import com.castle.code.error.MemberErrorCode;
 import com.castle.code.success.GlobalSuccessCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
 import com.castle.documentation.annotation.ApiErrorCodeExamples;
-import com.castle.domain.chat.dto.request.ChatLogsReadResponse;
+import com.castle.domain.member.service.MemberService;
 import com.castle.openai.service.OpenAiService;
 import com.castle.response.BfResponse;
 import com.castle.runpod.dto.request.CodeGenerateRequest;
@@ -31,6 +31,7 @@ public class RunPodStreamController {
 
     private final RunPodStreamService runPodStreamService;
     private final OpenAiService openAiService;
+    private final MemberService memberService;
 
     /**
      * 프론트엔드에서 prompt 파라미터를 받아 SSE 스트림으로 응답 전송
@@ -66,9 +67,15 @@ public class RunPodStreamController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "요청 취소 성공", useReturnTypeSchema = true),
     })
-    @PostMapping(value = "/cancel")
-    public ResponseEntity<BfResponse<List<GlobalSuccessCode>>> stopRunPodSession(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-        runPodStreamService.stopRunPodSession(Long.parseLong(principalDetails.getUsername()));
+    @ApiErrorCodeExamples({
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_CHAT_SESSION_ACCESS"),
+            @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_CHAT_SESSION"),
+    })
+    @PostMapping(value = "/cancel/{chatSessionId}")
+    public ResponseEntity<BfResponse<List<GlobalSuccessCode>>> stopRunPodSession(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                                @PathVariable("chatSessionId") Long chatSessionId) {
+        memberService.validateChatSessionAccess(Long.parseLong(principalDetails.getUsername()), chatSessionId);
+        runPodStreamService.stopRunPodSession(chatSessionId);
         return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
     }
 
