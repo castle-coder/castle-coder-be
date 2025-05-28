@@ -37,7 +37,7 @@ public class RunPodAsyncExecutor {
         try {
             StringBuilder responseBuilder = new StringBuilder();
 
-            String grpcTarget = runPodGrpcClient.runAndGetGrpcTarget(prompt);
+            String grpcTarget = runPodGrpcClient.runAndGetGrpcTarget(chatSessionId, prompt);
             if (grpcTarget == null) {
                 emitter.completeWithError(new RunPodException(RunPodErrorCode.RUNPOD_CONNECTION_FAILED));
                 return;
