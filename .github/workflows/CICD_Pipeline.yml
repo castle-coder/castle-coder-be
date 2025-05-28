@@ -139,6 +139,13 @@ jobs:
             docker stop castle-coder-be || true
             docker rm castle-coder-be || true
             
+            NETWORK=castle-coder-network
+
+          # 네트워크가 없으면 생성
+            if ! docker network inspect $NETWORK >/dev/null 2>&1; then
+              docker network create $NETWORK
+            fi
+            
             # Redis 컨테이너 실행
             docker run -d \
               --name redis \
