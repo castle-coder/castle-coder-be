@@ -136,6 +136,16 @@ jobs:
             
             docker stop castle-coder-be || true
             docker rm castle-coder-be || true
+            
+            docker run -d \
+              --name redis \
+              -p 6379:6379 \
+              --restart unless-stopped \
+              redis:7-alpine
+            
+            # Redis 컨테이너 실행
+            docker stop redis || true
+            docker rm redis || true
 
             docker pull ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
 
