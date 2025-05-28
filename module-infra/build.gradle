@@ -45,6 +45,11 @@ dependencies {
     // ==========================================
     testImplementation 'io.projectreactor:reactor-test'                     // Reactive 테스트
     testImplementation 'org.springframework.security:spring-security-test'  // Security 테스트
+
+    // ==========================================
+    // redis 관련 의존성
+    // ==========================================
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 // 프로토콜 버퍼 컴파일러(protoc) 설정

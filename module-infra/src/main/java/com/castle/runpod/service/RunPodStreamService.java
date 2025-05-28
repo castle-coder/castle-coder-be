@@ -33,8 +33,6 @@ public class RunPodStreamService {
 
     private final ChatSessionRepository chatSessionRepository;
     private final RunPodAsyncExecutor runPodAsyncExecutor;
-    private final ChatLogRepository chatLogRepository;
-    private final ChatImageRepository chatImageRepository;
 
     /**
      * 프론트엔드에 SSE를 통해 스트리밍 전송을 시작합니다.
@@ -53,5 +51,9 @@ public class RunPodStreamService {
         // 비동기로 분리된 메소드 호출
         runPodAsyncExecutor.streamAsync(prompt, chatSessionId, imageUrls, emitter);
         return emitter;
+    }
+
+    public void stopRunPodSession(Long memberId) {
+
     }
 }
