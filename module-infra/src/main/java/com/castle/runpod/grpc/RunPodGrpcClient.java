@@ -1,6 +1,7 @@
 package com.castle.runpod.grpc;
 
 import com.castle.redis.service.RedisDataService;
+import com.castle.redis.service.RedisDataServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
@@ -23,12 +24,17 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @Component
-@RequiredArgsConstructor
 public class RunPodGrpcClient {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final RedisDataService redisDataService;
+
+    public RunPodGrpcClient(RedisDataService redisDataService) {
+        this.redisDataService = redisDataService;
+        this.restTemplate = new RestTemplate();
+        this.objectMapper = new ObjectMapper();
+    }
 
     @Value("${runpod.api.endpoint}")
     private String endpointId;
