@@ -154,6 +154,7 @@ public class SecurityConfig {
                 // SSE 엔드포인트
                 antMatcher(POST, "/llm/generate-code"), // ai 모델 코드 생성 요청
                 antMatcher(POST, "/llm/refactor-code"), // ai 모델 코드 리팩토링 요청
+                antMatcher(POST, "/llm/cancel"), // llm 요청 취소
 
                 antMatcher(POST, "/chat/image"), // S3 Bucket에 채팅에 입력된 사진 업로드
                 antMatcher(DELETE, "/chat/image"), // S3 Bucket에 채팅에 입력된 사진 삭제
