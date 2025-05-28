@@ -134,22 +134,24 @@ jobs:
               echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
             fi
             
+            docker stop redis || true
+            docker rm redis || true
             docker stop castle-coder-be || true
             docker rm castle-coder-be || true
             
+            # Redis 컨테이너 실행
             docker run -d \
               --name redis \
+              --network castle-coder-network \
               -p 6379:6379 \
               --restart unless-stopped \
               redis:7-alpine
-            
-            # Redis 컨테이너 실행
-            docker stop redis || true
-            docker rm redis || true
 
             docker pull ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
 
-            docker run -d --name castle-coder-be -p 8080:8080 \
+            docker run -d --name castle-coder-be 
+              --network castle-coder-network \
+              -p 8080:8080 \
               -v $HOME/.env:/app/.env \
               -w /app \
               ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
