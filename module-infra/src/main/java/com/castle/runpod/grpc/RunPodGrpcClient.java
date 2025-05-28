@@ -119,14 +119,11 @@ public class RunPodGrpcClient {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<String> resp = restTemplate.exchange(
+            restTemplate.exchange(
                     url, HttpMethod.POST, entity, String.class
             );
-            if (resp.getStatusCode() != HttpStatus.OK) {
-                throw new RuntimeException("Failed to cancel job: HTTP " + resp.getStatusCode());
-            }
         } catch (Exception e) {
-            throw new RuntimeException("Error cancelling RunPod job", e);
+            // 에러가 발생해도 아무 동작도 하지 않고 넘어갑니다.
         }
     }
 
