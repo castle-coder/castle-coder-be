@@ -106,6 +106,27 @@ public class RunPodGrpcClient {
         }
     }
 
+    private String buildCancelUrl(String endpointId, String requestId) {
+        return String.format("https://api.runpod.ai/v2/%s/cancel/%s", endpointId, requestId);
+    }
+
+    public void cancelJob(String requestId) {
+        String url = buildCancelUrl(endpointId, requestId);
+        HttpHeaders headers = buildAuthHeaders();
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> resp = restTemplate.exchange(
+                    url, HttpMethod.POST, entity, String.class
+            );
+            if (resp.getStatusCode() != HttpStatus.OK) {
+                throw new RuntimeException("Failed to cancel job: HTTP " + resp.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error cancelling RunPod job", e);
+        }
+    }
+
     private String pollForGrpcTarget(String statusUrlTemplate, String requestId) {
         HttpHeaders headers = buildAuthHeaders();
         HttpEntity<Void> statusRequestEntity = new HttpEntity<>(headers);
