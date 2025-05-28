@@ -29,7 +29,6 @@ public class RunPodAsyncExecutor {
     private final ObjectMapper objectMapper;
     private final ChatService chatService;
     private final RedisDataService redisDataService;
-    private final RunPodStreamService runPodStreamService;
 
     @Async
     public void streamAsync(String prompt,
@@ -107,7 +106,8 @@ public class RunPodAsyncExecutor {
             }
         } finally {
             // 작업 완료 후 session stop 및 Redis 데이터 삭제(성공 실패 여부 상관 x)
-            runPodStreamService.stopRunPodSession(chatSessionId);
+            String jobId = redisDataService.getSingleData("runpod:requestId:" + chatSessionId);
+            runPodGrpcClient.cancelJob(jobId);
             redisDataService.deleteSingleData("runpod:requestId:" + chatSessionId);
             // 작업 완료 후 SecurityContext 정리
             SecurityContextHolder.clearContext();
