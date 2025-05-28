@@ -1,9 +1,12 @@
 package com.castle.runpod.controller;
 
 import com.castle.code.error.MemberErrorCode;
+import com.castle.code.success.GlobalSuccessCode;
 import com.castle.documentation.annotation.ApiErrorCodeExample;
 import com.castle.documentation.annotation.ApiErrorCodeExamples;
+import com.castle.domain.chat.dto.request.ChatLogsReadResponse;
 import com.castle.openai.service.OpenAiService;
+import com.castle.response.BfResponse;
 import com.castle.runpod.dto.request.CodeGenerateRequest;
 import com.castle.runpod.service.RunPodStreamService;
 import com.castle.security.principal.PrincipalDetails;
@@ -13,9 +16,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/llm")
@@ -51,6 +57,19 @@ public class RunPodStreamController {
         }
         // gpt api로 이미지 변환 api 추가
         return runPodStreamService.streamToClient(request.getPrompt(), Long.parseLong(principalDetails.getUsername()), request.getChatSessionId(), null);
+    }
+
+    @Operation(
+            summary = "llm 요청 취소",
+            description = "llm 요청을 취소 합니다."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "요청 취소 성공", useReturnTypeSchema = true),
+    })
+    @PostMapping(value = "/cancel")
+    public ResponseEntity<BfResponse<List<GlobalSuccessCode>>> stopRunPodSession(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        runPodStreamService.stopRunPodSession(Long.parseLong(principalDetails.getUsername()));
+        return ResponseEntity.ok(new BfResponse<>(GlobalSuccessCode.SUCCESS));
     }
 
     /**
