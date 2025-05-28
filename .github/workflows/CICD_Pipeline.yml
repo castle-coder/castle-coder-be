@@ -156,7 +156,8 @@ jobs:
 
             docker pull ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
 
-            docker run -d --name castle-coder-be 
+            docker run -d \
+              --name castle-coder-be \
               --network $NETWORK \
               -p 8080:8080 \
               -v $HOME/.env:/app/.env \
