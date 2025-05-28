@@ -141,7 +141,7 @@ jobs:
             
             NETWORK=castle-coder-network
 
-          # 네트워크가 없으면 생성
+            # 네트워크가 없으면 생성
             if ! docker network inspect $NETWORK >/dev/null 2>&1; then
               docker network create $NETWORK
             fi
@@ -149,7 +149,7 @@ jobs:
             # Redis 컨테이너 실행
             docker run -d \
               --name redis \
-              --network castle-coder-network \
+              --network $NETWORK \
               -p 6379:6379 \
               --restart unless-stopped \
               redis:7-alpine
@@ -157,7 +157,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
 
             docker run -d --name castle-coder-be 
-              --network castle-coder-network \
+              --network $NETWORK \
               -p 8080:8080 \
               -v $HOME/.env:/app/.env \
               -w /app \
