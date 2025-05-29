@@ -71,7 +71,7 @@ public class RunPodStreamController {
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "FORBIDDEN_CHAT_SESSION_ACCESS"),
             @ApiErrorCodeExample(errorClass = MemberErrorCode.class, field = "NOT_FOUND_CHAT_SESSION"),
     })
-    @PostMapping(value = "/cancel/{chatSessionId}")
+    @DeleteMapping(value = "/cancel/{chatSessionId}")
     public ResponseEntity<BfResponse<List<GlobalSuccessCode>>> stopRunPodSession(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                                 @PathVariable("chatSessionId") Long chatSessionId) {
         memberService.validateChatSessionAccess(Long.parseLong(principalDetails.getUsername()), chatSessionId);
