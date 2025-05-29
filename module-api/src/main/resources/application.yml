@@ -20,6 +20,11 @@ springdoc:
     operations-sorter: method
 
 spring:
+  data:
+    redis:
+      host: redis
+      port: 6379
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${DB_URL}

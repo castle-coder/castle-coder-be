@@ -55,7 +55,7 @@ public class ChatImageController {
             @ApiResponse(responseCode = "200", description = "S3 사진 삭제 성공", useReturnTypeSchema = true),
     })
     @DeleteMapping(value = "")
-    public ResponseEntity<BfResponse<Void>> deleteChatImage(
+    public ResponseEntity<BfResponse<GlobalSuccessCode>> deleteChatImage(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @Parameter(description = "사진 URL입니다.", example = "https://.../ecc84...203.png")
             @RequestParam("imageUrl") String imageUrl

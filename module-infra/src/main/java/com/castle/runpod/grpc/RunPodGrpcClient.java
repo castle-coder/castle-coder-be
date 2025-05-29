@@ -1,14 +1,15 @@
 package com.castle.runpod.grpc;
 
+import com.castle.redis.service.RedisDataService;
+import com.castle.redis.service.RedisDataServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +17,7 @@ import runpod.Service.HandleRequest;
 import runpod.Service.HandleResponse;
 import runpod.RunPodServiceGrpc;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,13 @@ public class RunPodGrpcClient {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final RedisDataService redisDataService;
+
+    public RunPodGrpcClient(RedisDataService redisDataService) {
+        this.redisDataService = redisDataService;
+        this.restTemplate = new RestTemplate();
+        this.objectMapper = new ObjectMapper();
+    }
 
     @Value("${runpod.api.endpoint}")
     private String endpointId;
@@ -33,16 +42,16 @@ public class RunPodGrpcClient {
     @Value("${runpod.api.key}")
     private String apiKey;
 
-    public RunPodGrpcClient() {
-        this.restTemplate = new RestTemplate();
-        this.objectMapper = new ObjectMapper();
-    }
-
-    public String runAndGetGrpcTarget(String prompt) {
+    public String runAndGetGrpcTarget(Long chatSessionId, String prompt) {
         String runUrl = buildRunUrl(endpointId);
         String statusUrlTemplate = buildStatusUrlTemplate(endpointId);
 
         String requestId = sendRunRequest(runUrl, prompt);
+
+        if (redisDataService.setSingleData("runpod:requestId:" + chatSessionId, requestId, Duration.ofMinutes(10)) == 0) {
+            throw new RuntimeException("Failed to store requestId in Redis");
+        }
+
         return pollForGrpcTarget(statusUrlTemplate, requestId);
     }
 
@@ -103,6 +112,24 @@ public class RunPodGrpcClient {
             return root.get("id").asText();
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse request id from RunPod", e);
+        }
+    }
+
+    private String buildCancelUrl(String endpointId, String requestId) {
+        return String.format("https://api.runpod.ai/v2/%s/cancel/%s", endpointId, requestId);
+    }
+
+    public void cancelJob(String requestId) {
+        String url = buildCancelUrl(endpointId, requestId);
+        HttpHeaders headers = buildAuthHeaders();
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            restTemplate.exchange(
+                    url, HttpMethod.POST, entity, String.class
+            );
+        } catch (Exception e) {
+            // 에러가 발생해도 아무 동작도 하지 않고 넘어갑니다.
         }
     }
 

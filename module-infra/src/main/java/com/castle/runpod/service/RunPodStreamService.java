@@ -2,21 +2,15 @@ package com.castle.runpod.service;
 
 import com.castle.code.error.ChatErrorCode;
 import com.castle.code.error.MemberErrorCode;
-import com.castle.domain.chat.entity.ChatImage;
-import com.castle.domain.chat.entity.ChatLog;
 import com.castle.domain.chat.entity.ChatSession;
-import com.castle.domain.chat.repository.ChatImageRepository;
-import com.castle.domain.chat.repository.ChatLogRepository;
 import com.castle.domain.chat.repository.ChatSessionRepository;
 import com.castle.exception.ChatException;
 import com.castle.exception.MemberException;
+import com.castle.redis.service.RedisDataService;
+import com.castle.runpod.grpc.RunPodGrpcClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
@@ -33,8 +27,8 @@ public class RunPodStreamService {
 
     private final ChatSessionRepository chatSessionRepository;
     private final RunPodAsyncExecutor runPodAsyncExecutor;
-    private final ChatLogRepository chatLogRepository;
-    private final ChatImageRepository chatImageRepository;
+    private final RedisDataService redisDataService;
+    private final RunPodGrpcClient runPodGrpcClient;
 
     /**
      * 프론트엔드에 SSE를 통해 스트리밍 전송을 시작합니다.
@@ -53,5 +47,12 @@ public class RunPodStreamService {
         // 비동기로 분리된 메소드 호출
         runPodAsyncExecutor.streamAsync(prompt, chatSessionId, imageUrls, emitter);
         return emitter;
+    }
+
+    public void stopRunPodSession(Long chatSessionId) {
+        String jobId = redisDataService.getSingleData("runpod:requestId:" + chatSessionId);
+        runPodGrpcClient.cancelJob(jobId);
+
+        redisDataService.deleteSingleData("runpod:requestId:" + chatSessionId);
     }
 }
