@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Component
@@ -63,7 +64,8 @@ public class RunPodGrpcClient {
                 .usePlaintext()
                 .build();
 
-        RunPodServiceGrpc.RunPodServiceStub stub = RunPodServiceGrpc.newStub(channel);
+        RunPodServiceGrpc.RunPodServiceStub stub = RunPodServiceGrpc.newStub(channel)
+                .withDeadlineAfter(3, TimeUnit.MINUTES);
 
         HandleRequest request = HandleRequest.newBuilder()
                 .setPrompt(prompt)
