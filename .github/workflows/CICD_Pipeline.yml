@@ -46,7 +46,7 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      # 1) Compose·프롬메테우스·env 전송
+      # 1) Compose·Prometheus 파일만 전송 (.env 제외)
       - name: Upload stack files
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -57,7 +57,6 @@ jobs:
           source: |
             docker-compose.yml
             prometheus/prometheus.yml
-            .env
           target: ~/castle-coder
 
       # 2) 원격 배포
@@ -72,13 +71,17 @@ jobs:
             set -e
             cd ~/castle-coder
 
-            # .env 값 갱신
+            # .env 미리 준비
+            touch .env
+
+            # .env 값 갱신 함수
             update_env () {
               VAR=$1 VAL=$2
               grep -q "^${VAR}=" .env && sed -i "s|^${VAR}=.*|${VAR}=${VAL}|" .env \
                 || echo "${VAR}=${VAL}" >> .env
             }
 
+            # secrets 주입
             update_env RUNPOD_API_KEY "${{ secrets.RUNPOD_API_KEY }}"
             update_env RUNPOD_BASE_URL "${{ secrets.RUNPOD_BASE_URL }}"
             update_env RUNPOD_ENDPOINT "${{ secrets.RUNPOD_ENDPOINT }}"
@@ -93,14 +96,14 @@ jobs:
             update_env OPENAI_API_KEY "${{ secrets.OPENAI_API_KEY }}"
             update_env DOCKER_USERNAME "${{ secrets.DOCKER_USERNAME }}"
 
-            # Docker Compose CLI 설치(최초 1회)
+            # Docker Compose CLI 설치(최초 1회만)
             if ! command -v docker compose >/dev/null 2>&1; then
               sudo curl -sSL https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64 \
-                 -o /usr/local/bin/docker-compose
+                   -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
             fi
 
-            # 이미지 갱신 및 서비스 재기동
+            # 최신 이미지 받아서 서비스 재시작
             docker compose pull
             docker compose up -d --remove-orphans
             docker compose ps
