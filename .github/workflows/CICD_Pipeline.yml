@@ -2,23 +2,29 @@ name: Castle Coder BE CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
-    paths-ignore: ['README.md']
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - uses: actions/setup-java@v3
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
         with:
-          distribution: temurin
           java-version: '21'
+          distribution: 'temurin'
 
-      - uses: actions/cache@v3
+      - name: Cache Gradle
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
@@ -27,27 +33,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build JAR
-        run: ./gradlew :module-api:clean :module-api:bootjar
+      - name: Build with Gradle
+        run: ./gradlew build :module-api:clean :module-api:bootjar
 
-      - uses: docker/login-action@v3
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - uses: docker/build-push-action@v5
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
-          push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/castle-coder-be:latest
+          push: true
 
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      # 1) 원격 배포
-      - name: SSH Deploy via Docker Compose
+      - name: SSH Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_IP }}
@@ -55,44 +62,67 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            set -e
             cd ~/castle-coder-be
-            git remote set-url origin git@github.com:castle-coder/castle-coder-be.git
-
-            # .env 미리 준비
-            touch .env
-
-            # .env 값 갱신 함수
-            update_env () {
-              VAR=$1 VAL=$2
-              grep -q "^${VAR}=" .env && sed -i "s|^${VAR}=.*|${VAR}=${VAL}|" .env \
-                || echo "${VAR}=${VAL}" >> .env
-            }
-
-            # secrets 주입
-            update_env RUNPOD_API_KEY "${{ secrets.RUNPOD_API_KEY }}"
-            update_env RUNPOD_BASE_URL "${{ secrets.RUNPOD_BASE_URL }}"
-            update_env RUNPOD_ENDPOINT "${{ secrets.RUNPOD_ENDPOINT }}"
-            update_env DB_USERNAME "${{ secrets.DB_USERNAME }}"
-            update_env DB_URL "${{ secrets.DB_URL }}"
-            update_env DB_PASSWORD "${{ secrets.DB_PASSWORD }}"
-            update_env ACCESS_EXPIRATION_SECONDS "${{ secrets.ACCESS_EXPIRATION_SECONDS }}"
-            update_env JWT_SECRET_KEY "${{ secrets.JWT_SECRET_KEY }}"
-            update_env REFRESH_EXPIRATION_SECONDS "${{ secrets.REFRESH_EXPIRATION_SECONDS }}"
-            update_env AWS_S3_ACCESS_KEY "${{ secrets.AWS_S3_ACCESS_KEY }}"
-            update_env AWS_S3_SECRET_KEY "${{ secrets.AWS_S3_SECRET_KEY }}"
-            update_env OPENAI_API_KEY "${{ secrets.OPENAI_API_KEY }}"
-            update_env DOCKER_USERNAME "${{ secrets.DOCKER_USERNAME }}"
-
-            # Docker Compose CLI 설치(최초 1회만)
-            if ! command -v docker compose >/dev/null 2>&1; then
-              sudo curl -sSL https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-x86_64 \
-                   -o /usr/local/bin/docker-compose
-              sudo chmod +x /usr/local/bin/docker-compose
+            git pull origin main
+            
+            if grep -q "^RUNPOD_API_KEY=" .env; then
+              sed -i "s/^RUNPOD_API_KEY=.*/RUNPOD_API_KEY=${{ secrets.RUNPOD_API_KEY }}/" .env
+            else
+              echo "RUNPOD_API_KEY=${{ secrets.RUNPOD_API_KEY }}" >> .env
             fi
 
-            # 최신 이미지 받아서 서비스 재시작
-            git pull origin main
+            if grep -q "^RUNPOD_BASE_URL=" .env; then
+              sed -i "s/^RUNPOD_BASE_URL=.*/RUNPOD_BASE_URL=${{ secrets.RUNPOD_BASE_URL }}/" .env
+            else
+              echo "RUNPOD_BASE_URL=${{ secrets.RUNPOD_BASE_URL }}" >> .env
+            fi
+
+            if grep -q "^RUNPOD_ENDPOINT=" .env; then
+              sed -i "s/^RUNPOD_ENDPOINT=.*/RUNPOD_ENDPOINT=${{ secrets.RUNPOD_ENDPOINT }}/" .env
+            else
+              echo "RUNPOD_ENDPOINT=${{ secrets.RUNPOD_ENDPOINT }}" >> .env
+            fi
+            
+            if grep -q "^DB_USERNAME=" .env; then
+              sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${{ secrets.DB_USERNAME }}/" .env
+            else
+              echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+            fi
+            
+            if grep -q "^DB_URL=" .env; then
+              sed -i "s/^DB_URL=.*/DB_URL=${{ secrets.DB_URL }}/" .env
+            else
+              echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+            fi
+            
+            if grep -q "^DB_PASSWORD=" .env; then
+              sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${{ secrets.DB_PASSWORD }}/" .env
+            else
+              echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            fi
+            
+            if grep -q "^ACCESS_EXPIRATION_SECONDS=" .env; then
+              sed -i "s/^ACCESS_EXPIRATION_SECONDS=.*/ACCESS_EXPIRATION_SECONDS=${{ secrets.ACCESS_EXPIRATION_SECONDS }}/" .env
+            else
+              echo "ACCESS_EXPIRATION_SECONDS=${{ secrets.ACCESS_EXPIRATION_SECONDS }}" >> .env
+            fi
+            
+            if grep -q "^JWT_SECRET_KEY=" .env; then
+              sed -i "s/^JWT_SECRET_KEY=.*/JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}/" .env
+            else
+              echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+            fi
+            
+            if grep -q "^REFRESH_EXPIRATION_SECONDS=" .env; then
+              sed -i "s/^REFRESH_EXPIRATION_SECONDS=.*/REFRESH_EXPIRATION_SECONDS=${{ secrets.REFRESH_EXPIRATION_SECONDS }}/" .env
+            else
+              echo "REFRESH_EXPIRATION_SECONDS=${{ secrets.REFRESH_EXPIRATION_SECONDS }}" >> .env
+            fi
+            
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
+            docker stop $(docker ps -a -q) 
+            docker rm -f $(docker ps -qa)
+            sudo chmod +x docker-compose.yml
             docker-compose pull
-            docker-compose up -d --remove-orphans
-            docker-compose ps
+            docker-compose up -d
+            docker image prune -f
