@@ -67,33 +67,41 @@ public class RunPodGrpcClient {
         RunPodServiceGrpc.RunPodServiceStub stub = RunPodServiceGrpc.newStub(channel)
                 .withDeadlineAfter(10, TimeUnit.MINUTES);
 
-        HandleRequest request = HandleRequest.newBuilder()
-                .setPrompt(prompt)
-                .setSeconds(2)
-                .build();
+        try {
+            String promptJson = objectMapper.writeValueAsString(buildRequestBody(prompt));
 
-        stub.handle(request, new StreamObserver<>() {
-            @Override
-            public void onNext(HandleResponse response) {
-                try {
-                    handleResponse(response, onToken, onComplete);
-                } catch (Exception ex) {
-                    onError.accept(ex);
+            HandleRequest request = HandleRequest.newBuilder()
+                    .setPrompt(promptJson) // JSON 문자열 전체 전달
+                    .setSeconds(2)
+                    .build();
+
+            stub.handle(request, new StreamObserver<>() {
+                @Override
+                public void onNext(HandleResponse response) {
+                    try {
+                        handleResponse(response, onToken, onComplete);
+                    } catch (Exception ex) {
+                        onError.accept(ex);
+                    }
                 }
-            }
 
-            @Override
-            public void onError(Throwable t) {
-                onError.accept(t);
-                channel.shutdown();
-            }
+                @Override
+                public void onError(Throwable t) {
+                    onError.accept(t);
+                    channel.shutdown();
+                }
 
-            @Override
-            public void onCompleted() {
-                onComplete.run();
-                channel.shutdown();
-            }
-        });
+                @Override
+                public void onCompleted() {
+                    onComplete.run();
+                    channel.shutdown();
+                }
+            });
+
+        } catch (Exception e) {
+            onError.accept(e);
+            channel.shutdown();
+        }
     }
 
     private String buildRunUrl(String endpointId) {
