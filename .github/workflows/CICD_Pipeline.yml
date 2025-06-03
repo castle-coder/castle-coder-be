@@ -56,8 +56,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           source: |
-            docker-compose.yml
-            prometheus/prometheus.yml
+            ./docker-compose.yml
+            ./prometheus/prometheus.yml
           target: ~/castle-coder
 
       # 2) 원격 배포
