@@ -72,5 +72,8 @@ openai:
 management:
   endpoints:
     web:
-      exposure.include: "health,info,prometheus"
-  metrics.tags.application: castle-coder-be
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    prometheus:
+      enabled: true

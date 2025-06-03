@@ -43,6 +43,13 @@ subprojects {
 		annotationProcessor 'org.projectlombok:lombok'
 		implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 		implementation 'io.micrometer:micrometer-core' // Micrometer Core
+
+
+		// ==========================================
+		// 모니터링 관련 의존성
+		// ==========================================
+		implementation 'org.springframework.boot:spring-boot-starter-actuator'
+		implementation 'io.micrometer:micrometer-registry-prometheus'
 	}
 
 	test {
