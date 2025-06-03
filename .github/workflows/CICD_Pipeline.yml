@@ -46,7 +46,6 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       # 1) Compose·Prometheus 파일만 전송 (.env 제외)
       - name: Upload stack files
         uses: appleboy/scp-action@v0.1.7
@@ -56,9 +55,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           source: |
-            ./docker-compose.yml
-            ./prometheus/prometheus.yml
-          target: ~/castle-coder
+            docker-compose.yml
+            prometheus/prometheus.yml
+          target: ~/castle-coder-be
 
       # 2) 원격 배포
       - name: SSH Deploy via Docker Compose
@@ -70,7 +69,7 @@ jobs:
           port: 22
           script: |
             set -e
-            cd ~/castle-coder
+            cd ~/castle-coder-be
 
             # .env 미리 준비
             touch .env
