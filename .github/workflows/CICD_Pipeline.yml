@@ -57,6 +57,7 @@ jobs:
           script: |
             set -e
             cd ~/castle-coder-be
+            git remote set-url origin git@github.com:castle-coder/castle-coder-be.git
 
             # .env 미리 준비
             touch .env
