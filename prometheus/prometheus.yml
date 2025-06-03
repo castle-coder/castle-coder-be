@@ -1,0 +1,13 @@
+# prometheus/prometheus.yml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "spring-boot"
+    metrics_path: /api/v1/actuator/prometheus
+    static_configs:
+      - targets: ["castle-coder-be:8080"]
+
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis-exporter:9121"]

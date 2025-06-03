@@ -39,4 +39,10 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test'                     // Reactive 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'  // Spring 테스트
     testImplementation 'org.springframework.security:spring-security-test'  // Security 테스트
+
+    // ==========================================
+    // 모니터링 관련 의존성
+    // ==========================================
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
