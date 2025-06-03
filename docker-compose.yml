@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - castle-coder-net
+
+  app:
+    image: ${DOCKER_USERNAME}/castle-coder-be:latest  # GitHub Secrets DOCKER_USERNAME
+    container_name: castle-coder-be
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env            # EC2 서버에 위치한 .env
+    networks:
+      - castle-coder-net
+    working_dir: /app
+
+networks:
+  castle-coder-net:
+    driver: bridge
