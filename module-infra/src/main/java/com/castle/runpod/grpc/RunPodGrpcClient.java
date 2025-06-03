@@ -65,7 +65,7 @@ public class RunPodGrpcClient {
                 .build();
 
         RunPodServiceGrpc.RunPodServiceStub stub = RunPodServiceGrpc.newStub(channel)
-                .withDeadlineAfter(3, TimeUnit.MINUTES);
+                .withDeadlineAfter(10, TimeUnit.MINUTES);
 
         HandleRequest request = HandleRequest.newBuilder()
                 .setPrompt(prompt)
