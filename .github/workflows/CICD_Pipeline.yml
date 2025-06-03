@@ -48,7 +48,7 @@ jobs:
     steps:
       # 1) 원격 배포
       - name: SSH Deploy via Docker Compose
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -91,6 +91,7 @@ jobs:
             fi
 
             # 최신 이미지 받아서 서비스 재시작
+            git pull origin main
             docker-compose pull
             docker-compose up -d --remove-orphans
             docker-compose ps
