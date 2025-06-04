@@ -3,6 +3,7 @@ package com.castle.runpod.service;
 import com.castle.code.error.RunPodErrorCode;
 import com.castle.domain.chat.service.ChatService;
 import com.castle.exception.RunPodException;
+import com.castle.openai.service.OpenAiService;
 import com.castle.redis.service.RedisDataService;
 import com.castle.runpod.grpc.RunPodGrpcClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,7 @@ public class RunPodAsyncExecutor {
     private final ObjectMapper objectMapper;
     private final ChatService chatService;
     private final RedisDataService redisDataService;
+    private final OpenAiService openAiService;
 
     @Async
     public void streamAsync(String prompt,
@@ -73,6 +75,7 @@ public class RunPodAsyncExecutor {
                                         )));
                                 emitter.complete();
                                 chatService.saveChatLog(chatSessionId, prompt, responseBuilder.toString(), imageUrls);
+                                openAiService.generateTitle(chatSessionId, prompt);
                             }
                         } catch (IOException e) {
                             log.warn("Failed to send end event.", e);

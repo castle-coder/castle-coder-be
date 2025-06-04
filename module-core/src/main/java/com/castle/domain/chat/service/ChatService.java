@@ -94,7 +94,6 @@ public class ChatService {
         chatSessionRepository.delete(chatSession);
     }
 
-
     @Transactional
     public void saveChatLog(Long chatSessionId,
                                String prompt,
