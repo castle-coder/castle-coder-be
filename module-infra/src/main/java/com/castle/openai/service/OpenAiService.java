@@ -25,6 +25,64 @@ public class OpenAiService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    public String generateTitle(String prompt) {
+        try {
+            // 1) 요청 본문 구성 ---------------------------------------------------
+            ObjectNode body = objectMapper.createObjectNode();
+            body.put("model", openAiModel);          // ex) gpt-4o-mini, gpt-4o, gpt-4-turbo
+            body.put("max_tokens", 32);              // 제목은 짧으니 충분히 작게
+            body.put("temperature", 0.5);
+
+            ArrayNode messages = objectMapper.createArrayNode();
+
+            ObjectNode system = objectMapper.createObjectNode();
+            system.put("role", "system");
+            system.put("content",
+                    "Summarize the user's text into a concise, catchy title (≤ 10 words), using the same language as the prompt");
+            messages.add(system);
+
+            ObjectNode user = objectMapper.createObjectNode();
+            user.put("role", "user");
+            user.put("content", prompt);
+            messages.add(user);
+
+            body.set("messages", messages);
+
+            // 2) HTTP 설정 -------------------------------------------------------
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(openAiApiKey);
+
+            HttpEntity<String> request =
+                    new HttpEntity<>(objectMapper.writeValueAsString(body), headers);
+
+            // 3) 요청/응답 --------------------------------------------------------
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                    "https://api.openai.com/v1/chat/completions",
+                    request,
+                    String.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                JsonNode root = objectMapper.readTree(response.getBody());
+                JsonNode choices = root.path("choices");
+                if (choices.isArray() && choices.size() > 0) {
+                    // 첫 번째 선택지의 메시지 → content
+                    return choices.get(0)
+                            .path("message")
+                            .path("content")
+                            .asText()
+                            .trim();
+                }
+            }
+            return "OpenAI 응답에 제목이 없습니다.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "제목 생성 중 오류: " + e.getMessage();
+        }
+    }
+
+
     public String generateImagePrompt(List<String> imageUrls) {
         try {
             // Create message content
