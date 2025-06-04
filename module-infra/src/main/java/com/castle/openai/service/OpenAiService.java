@@ -1,5 +1,10 @@
 package com.castle.openai.service;
 
+import com.castle.code.error.ChatErrorCode;
+import com.castle.domain.chat.entity.ChatSession;
+import com.castle.domain.chat.repository.ChatSessionRepository;
+import com.castle.domain.chat.service.ChatService;
+import com.castle.exception.ChatException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -24,8 +30,15 @@ public class OpenAiService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ChatSessionRepository chatSessionRepository;
 
-    public String generateTitle(String prompt) {
+    @Transactional
+    public void generateTitle(Long chatSessionId, String prompt) {
+        ChatSession chatSession = chatSessionRepository.findById(chatSessionId)
+                .orElseThrow(() -> new ChatException(ChatErrorCode.NOT_FOUND_CHAT_SESSION));
+        if (chatSession.getTitle() != null) {
+            return; // 이미 제목이 생성된 경우
+        }
         try {
             // 1) 요청 본문 구성 ---------------------------------------------------
             ObjectNode body = objectMapper.createObjectNode();
@@ -68,17 +81,15 @@ public class OpenAiService {
                 JsonNode choices = root.path("choices");
                 if (choices.isArray() && choices.size() > 0) {
                     // 첫 번째 선택지의 메시지 → content
-                    return choices.get(0)
+                    chatSession.updateTitle(choices.get(0)
                             .path("message")
                             .path("content")
                             .asText()
-                            .trim();
+                            .trim());
                 }
             }
-            return "OpenAI 응답에 제목이 없습니다.";
         } catch (Exception e) {
             e.printStackTrace();
-            return "제목 생성 중 오류: " + e.getMessage();
         }
     }
 
