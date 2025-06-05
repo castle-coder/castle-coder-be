@@ -42,6 +42,8 @@ public class RunPodAsyncExecutor {
             StringBuilder responseBuilder = new StringBuilder();
 
             String grpcTarget = runPodGrpcClient.runAndGetGrpcTarget(chatSessionId, prompt);
+            log.info("RunPod gRPC target: {}", grpcTarget);
+
             if (grpcTarget == null) {
                 emitter.completeWithError(new RunPodException(RunPodErrorCode.RUNPOD_CONNECTION_FAILED));
                 return;
@@ -109,8 +111,8 @@ public class RunPodAsyncExecutor {
             }
         } finally {
             // 작업 완료 후 session stop 및 Redis 데이터 삭제(성공 실패 여부 상관 x)
-            String jobId = redisDataService.getSingleData("runpod:requestId:" + chatSessionId);
-            runPodGrpcClient.cancelJob(jobId);
+//            String jobId = redisDataService.getSingleData("runpod:requestId:" + chatSessionId);
+//            runPodGrpcClient.cancelJob(jobId);
             redisDataService.deleteSingleData("runpod:requestId:" + chatSessionId);
             // 작업 완료 후 SecurityContext 정리
             SecurityContextHolder.clearContext();

@@ -1,13 +1,12 @@
 package com.castle.runpod.grpc;
 
 import com.castle.redis.service.RedisDataService;
-import com.castle.redis.service.RedisDataServiceImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -25,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @Component
+@Slf4j
 public class RunPodGrpcClient {
 
     private final RestTemplate restTemplate;
@@ -48,6 +48,7 @@ public class RunPodGrpcClient {
         String statusUrlTemplate = buildStatusUrlTemplate(endpointId);
 
         String requestId = sendRunRequest(runUrl, prompt);
+        log.info("RunPod requestId: {}", requestId);
 
         if (redisDataService.setSingleData("runpod:requestId:" + chatSessionId, requestId, Duration.ofMinutes(10)) == 0) {
             throw new RuntimeException("Failed to store requestId in Redis");
