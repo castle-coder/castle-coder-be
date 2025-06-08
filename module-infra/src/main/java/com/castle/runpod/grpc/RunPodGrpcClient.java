@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.binder.grpc.MetricCollectingClientInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -63,6 +65,7 @@ public class RunPodGrpcClient {
                                Consumer<Throwable> onError) {
         ManagedChannel channel = ManagedChannelBuilder.forTarget(grpcTarget)
                 .usePlaintext()
+                .intercept(new MetricCollectingClientInterceptor(Metrics.globalRegistry))
                 .build();
 
         RunPodServiceGrpc.RunPodServiceStub stub = RunPodServiceGrpc.newStub(channel)

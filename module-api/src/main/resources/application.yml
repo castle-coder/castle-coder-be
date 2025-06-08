@@ -79,7 +79,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, prometheus
+        include: health, info, prometheus, metrics
   endpoint:
     prometheus:
       enabled: true
+  metrics:
+    distribution.percentiles-histogram:
+      http.server.requests: true      # HTTP p95/p99
+      grpc.client.requests: true      # gRPC Stub p95/p99

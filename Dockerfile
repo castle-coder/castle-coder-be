@@ -1,4 +1,5 @@
-From openjdk:21-jdk-slim As builder
+FROM openjdk:21-jdk-slim As builder
+
 WORKDIR /app
 
 COPY . .
