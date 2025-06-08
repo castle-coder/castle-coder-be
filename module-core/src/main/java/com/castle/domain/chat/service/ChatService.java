@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -50,6 +51,7 @@ public class ChatService {
             throw new MemberException(MemberErrorCode.FORBIDDEN_CHAT_SESSION_ACCESS);
         }
         List<ChatLog> chatLogs = chatSession.getChatLogs();
+        chatLogs.sort(Comparator.comparing(ChatLog::getCreatedAt));
 
         return chatLogs.stream()
                 .map(ChatLogsReadResponse::fromEntity)
