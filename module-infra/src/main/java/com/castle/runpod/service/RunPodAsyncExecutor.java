@@ -132,7 +132,7 @@ public class RunPodAsyncExecutor {
                             
                             chatService.saveChatLog(chatSessionId, originalPrompt,
                                     responseBuilder.toString(), imageUrls);
-                            openAiService.generateTitle(chatSessionId, prompt);
+                            openAiService.generateTitle(chatSessionId, originalPrompt);
                         }
                     },
                     /* onError */ error -> {
