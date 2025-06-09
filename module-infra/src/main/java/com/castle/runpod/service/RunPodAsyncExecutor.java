@@ -126,9 +126,13 @@ public class RunPodAsyncExecutor {
                                 }
                             });
                             emitter.complete();
-                            chatService.saveChatLog(chatSessionId, prompt,
+                            
+                            // 원본 prompt 추출 (이미지 변환 내용 및 instruction 제거)
+                            String originalPrompt = extractOriginalPrompt(prompt, imageUrls);
+                            
+                            chatService.saveChatLog(chatSessionId, originalPrompt,
                                     responseBuilder.toString(), imageUrls);
-                            openAiService.generateTitle(chatSessionId, prompt);
+                            openAiService.generateTitle(chatSessionId, originalPrompt);
                         }
                     },
                     /* onError */ error -> {
@@ -168,5 +172,29 @@ public class RunPodAsyncExecutor {
             ACTIVE_STREAMS.decrementAndGet();
             sample.stop(STREAM_TIMER);
         }
+    }
+
+    /**
+     * 이미지 변환 내용과 instruction을 제거하여 원본 prompt를 추출합니다.
+     */
+    private String extractOriginalPrompt(String fullPrompt, List<String> imageUrls) {
+        String originalPrompt = fullPrompt;
+        
+        // 1. 보안 리팩토링 instruction 제거
+        String appendedInstruction = "\nDivide the response into the complete code and a detailed explanation.";
+        if (originalPrompt.endsWith(appendedInstruction)) {
+            originalPrompt = originalPrompt.substring(0, originalPrompt.length() - appendedInstruction.length()).trim();
+        }
+        
+        // 2. 이미지가 있는 경우, 이미지 변환 내용 제거
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            // "이미지변환내용\n사용자입력prompt" 형태에서 마지막 \n 이후 부분만 추출
+            int lastNewlineIndex = originalPrompt.lastIndexOf('\n');
+            if (lastNewlineIndex != -1 && lastNewlineIndex < originalPrompt.length() - 1) {
+                originalPrompt = originalPrompt.substring(lastNewlineIndex + 1).trim();
+            }
+        }
+        
+        return originalPrompt;
     }
 }
