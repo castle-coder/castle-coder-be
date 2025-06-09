@@ -33,9 +33,6 @@ public class MemberService {
         if (memberRepository.findByEmail(member.getEmail()).isPresent()) {
             throw new MemberException(MemberErrorCode.EXIST_MEMBER_EMAIL);
         }
-        if (memberRepository.findByPhoneNumber(member.getPhoneNumber()).isPresent()) {
-            throw new MemberException(MemberErrorCode.EXIST_PHONE_NUMBER);
-        }
         memberRepository.save(member);
 
         initChatSession(member);
