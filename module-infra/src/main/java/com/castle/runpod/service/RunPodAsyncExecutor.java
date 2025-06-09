@@ -86,7 +86,7 @@ public class RunPodAsyncExecutor {
 
             runPodGrpcClient.streamFromGrpc(
                     grpcTarget,
-                    prompt + "\n" + "Wrap the code in a code block if it appears in the response.",
+                    prompt,
                     /* onToken */ token -> {
                         try {
                             responseBuilder.append(token);
