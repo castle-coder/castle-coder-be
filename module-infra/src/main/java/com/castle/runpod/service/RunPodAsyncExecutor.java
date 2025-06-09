@@ -181,7 +181,7 @@ public class RunPodAsyncExecutor {
         String originalPrompt = fullPrompt;
         
         // 1. 보안 리팩토링 instruction 제거
-        String appendedInstruction = "\nDivide the response into the complete code and a detailed explanation.";
+        String appendedInstruction = "\n"+"Please apply security refactoring to the code above and provide the updated version, dividing your response into the complete code and a detailed explanation of the changes.";
         if (originalPrompt.endsWith(appendedInstruction)) {
             originalPrompt = originalPrompt.substring(0, originalPrompt.length() - appendedInstruction.length()).trim();
         }
