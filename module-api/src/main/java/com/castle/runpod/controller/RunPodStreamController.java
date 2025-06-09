@@ -50,9 +50,9 @@ public class RunPodStreamController {
     public SseEmitter generateCode(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody CodeGenerateRequest request) {
         System.out.println(request.getImageUrls());
         if (request.getImageUrls() != null) {
-            String imagePrompt = openAiService.generateImagePrompt(request.getImageUrls());
+            String imagePrompt = "Image interpretation: " + openAiService.generateImagePrompt(request.getImageUrls());
             return runPodStreamService.streamToClient(
-                    imagePrompt + "\n" + request.getPrompt(),
+                    imagePrompt + "\n request: " + request.getPrompt(),
                     Long.parseLong(principalDetails.getUsername()),
                     request.getChatSessionId(), request.getImageUrls());
         }

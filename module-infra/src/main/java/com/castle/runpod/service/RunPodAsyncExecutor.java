@@ -189,10 +189,12 @@ public class RunPodAsyncExecutor {
         // 2. 이미지가 있는 경우, 이미지 변환 내용 제거
         if (imageUrls != null && !imageUrls.isEmpty()) {
             // "이미지변환내용\n사용자입력prompt" 형태에서 마지막 \n 이후 부분만 추출
-            int lastNewlineIndex = originalPrompt.lastIndexOf('\n');
-            if (lastNewlineIndex != -1 && lastNewlineIndex < originalPrompt.length() - 1) {
-                originalPrompt = originalPrompt.substring(lastNewlineIndex + 1).trim();
+            String keyword = "\n request: ";
+            int keywordIndex = originalPrompt.lastIndexOf(keyword);
+            if (keywordIndex != -1 && keywordIndex + keyword.length() < originalPrompt.length()) {
+                originalPrompt = originalPrompt.substring(keywordIndex + keyword.length()).trim();
             }
+
         }
         
         return originalPrompt;
