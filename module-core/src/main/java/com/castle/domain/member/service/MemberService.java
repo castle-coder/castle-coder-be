@@ -34,21 +34,6 @@ public class MemberService {
             throw new MemberException(MemberErrorCode.EXIST_MEMBER_EMAIL);
         }
         memberRepository.save(member);
-
-        initChatSession(member);
-    }
-
-    /**
-     * 회원 가입 시 대화 세션을 초기화하는 서비스 로직
-     * @param member
-     */
-    @Transactional
-    public void initChatSession(Member member) {
-        ChatSession chatSession = ChatSession.builder()
-                .member(member)
-                .createdAt(LocalDateTime.now())
-                .build();
-        chatSessionRepository.save(chatSession);
     }
 
     /**
