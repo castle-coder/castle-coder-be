@@ -21,6 +21,6 @@ public class CodeGenerateRequest {
     private final String prompt;
 
     public String appendInstruction() {
-        return prompt.trim() + "\n" + "Please apply security refactoring to the code above and provide both the modified code and a clear explanation of the changes.";
+        return prompt.trim() + "\n" + "Please apply security refactoring to the code above and divide your response into two parts: (1) the complete modified code, Please wrap all code in proper code blocks using triple backticks (```) and specify the language, and (2) a detailed explanation of the security improvements applied.";
     }
 }
