@@ -132,7 +132,7 @@ public class RunPodAsyncExecutor {
                             
                             chatService.saveChatLog(chatSessionId, originalPrompt,
                                     responseBuilder.toString(), imageUrls);
-                            openAiService.generateTitle(chatSessionId, originalPrompt);
+                            openAiService.generateTitle(chatSessionId, prompt);
                         }
                     },
                     /* onError */ error -> {
@@ -181,7 +181,7 @@ public class RunPodAsyncExecutor {
         String originalPrompt = fullPrompt;
         
         // 1. 보안 리팩토링 instruction 제거
-        String appendedInstruction = "\n"+"Please apply security refactoring to the code above and provide the updated version, dividing your response into the complete code and a detailed explanation of the changes.";
+        String appendedInstruction = "\n"+"Please apply security refactoring to the code above and provide both the modified code and a clear explanation of the changes.";
         if (originalPrompt.endsWith(appendedInstruction)) {
             originalPrompt = originalPrompt.substring(0, originalPrompt.length() - appendedInstruction.length()).trim();
         }

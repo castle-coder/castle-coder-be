@@ -21,6 +21,6 @@ public class CodeGenerateRequest {
     private final String prompt;
 
     public String appendInstruction() {
-        return prompt.trim() + "\n" + "Please apply security refactoring to the code above and provide the updated version, dividing your response into the complete code and a detailed explanation of the changes.";
+        return prompt.trim() + "\n" + "Please apply security refactoring to the code above and provide both the modified code and a clear explanation of the changes.";
     }
 }
