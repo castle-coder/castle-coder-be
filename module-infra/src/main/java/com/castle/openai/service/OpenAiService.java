@@ -44,7 +44,7 @@ public class OpenAiService {
             ObjectNode body = objectMapper.createObjectNode();
             body.put("model", openAiModel);          // ex) gpt-4o-mini, gpt-4o, gpt-4-turbo
             body.put("max_tokens", 32);              // 제목은 짧으니 충분히 작게
-            body.put("temperature", 0.7);
+            body.put("temperature", 0.4);
 
             ArrayNode messages = objectMapper.createArrayNode();
 

@@ -218,7 +218,7 @@ public class RunPodGrpcClient {
         );
 
         Map<String, Object> samplingParams = Map.of(
-                "temperature", 0.3,
+                "temperature", 0.1,
                 "max_tokens", 4096
         );
 
